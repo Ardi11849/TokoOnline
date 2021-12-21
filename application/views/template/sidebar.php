@@ -15,23 +15,23 @@
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">dashboard</i>
             </div>
-            <span class="nav-link-text ms-1">Orderan</span>
+            <span class="nav-link-text ms-1">Dashboard</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white produk" href="<?php echo base_url()?>Produk">
+          <a class="nav-link text-white lazada" href="<?php echo base_url()?>Lazada">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="material-icons opacity-10">dashboard</i>
+              <i class="material-icons opacity-10">shop</i>
             </div>
-            <span class="nav-link-text ms-1">Produk</span>
+            <span class="nav-link-text ms-1">Lazada</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white chat" href="<?php echo base_url()?>Chat">
+          <a class="nav-link text-white shopee" href="<?php echo base_url()?>Shopee">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="material-icons opacity-10">message</i>
+              <i class="material-icons opacity-10">shop</i>
             </div>
-            <span class="nav-link-text ms-1">Chat</span>
+            <span class="nav-link-text ms-1">Shopee</span>
           </a>
         </li>
         <li class="nav-item mt-3">

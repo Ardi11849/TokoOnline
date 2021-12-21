@@ -5,7 +5,7 @@
   <link rel="apple-touch-icon" sizes="76x76" href="<?php echo base_url()?>assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="<?php echo base_url()?>assets/img/favicon.png">
   <title>
-    Dashboard
+    Material Dashboard 2 by Creative Tim
   </title>
   <!--     Fonts and icons     -->
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
@@ -17,6 +17,5 @@
   <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <!-- CSS Files -->
-  <link id="pagestyle" href="<?php echo base_url()?>assets/css/material-dashboard.css" rel="stylesheet" />
-  <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+  <link id="pagestyle" href="<?php echo base_url()?>assets/css/material-dashboard.css?v=3.0.0" rel="stylesheet" />
 </head>

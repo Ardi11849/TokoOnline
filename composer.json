@@ -12,7 +12,8 @@
 	},
 	"require": {
 		"php": ">=5.3.7",
-		"pusher/pusher-php-server": "^7.0"
+		"pusher/pusher-php-server": "^7.0",
+		"guzzlehttp/guzzle": "^7.4"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
