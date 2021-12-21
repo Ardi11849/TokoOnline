@@ -51,7 +51,8 @@
 			})
 		});
 
-		getProducts();
+		setTimeout(getProducts(), 1000);
+
 		function getProducts() {
 		  $.ajax({
 		    type: 'GET',
@@ -60,6 +61,7 @@
 		    success: function(data){
 		      console.log(data);
 		      lazadaDatatable(data.data.products);
+	      	  lazadaShowProduk(data.data.products);
 		    }
 		  })
 		}
