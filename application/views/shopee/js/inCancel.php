@@ -1,18 +1,18 @@
 <script type="text/javascript">
 	$(document).ready( function () {
-		$('#tanggalAwalUnpaid').datepicker({
+		$('#tanggalAwalInCancel').datepicker({
 			uiLibrary: 'bootstrap4',
 			format: 'dd-mm-yyyy'
 		});
-		$('#tanggalAkhirUnpaid').datepicker({
+		$('#tanggalAkhirInCancel').datepicker({
 			uiLibrary: 'bootstrap4',
 			format: 'dd-mm-yyyy'
 		});
 		var table;
 		var numberRenderer = $.fn.dataTable.render.number( ',', '.', 0, 'Rp. '  ).display;
-		function tableUnpaid(data) {
+		function tableInCancel(data) {
 			console.log(data);
-		    table = $('#tUnpaid').DataTable({
+		    table = $('#tInCancel').DataTable({
 				dom: 'Bfrtip',
 				buttons: ['excel', 'pdf', 'print',],
 				scrollX: true,
@@ -64,9 +64,9 @@
 			});
 		};
 
-		$('#btn-searchUnpaid').on('click', function() {
-			var dateToInt = parseInt($('#tanggalAkhirUnpaid').val().split('-'));
-			var dateFromInt = parseInt($("#tanggalAwalUnpaid").val().split('-'));
+		$('#btn-searchInCancel').on('click', function() {
+			var dateToInt = parseInt($('#tanggalAkhirInCancel').val().split('-'));
+			var dateFromInt = parseInt($("#tanggalAwalInCancel").val().split('-'));
 			var dateRange = dateToInt - dateFromInt;
 			if (dateRange > 15) {
 				$("#isiToastGagal").html('Range Tanggal tidak boleh melebihi 15 hari');
@@ -78,19 +78,19 @@
 			$.ajax({
 			    type: 'POST',
 			    url: '<?php echo base_url()?>Shopee/getOrdersShopee',
-			    data: 'dateFrom='+$('#tanggalAwalUnpaid').val()+'&dateTo='+$("#tanggalAkhirUnpaid").val()+'&type=UNPAID',
+			    data: 'dateFrom='+$('#tanggalAwalInCancel').val()+'&dateTo='+$("#tanggalAkhirInCancel").val()+'&type=IN_CANCEL',
 			    dataType: 'json',
 			    success: function(data){
 					$("#isiToastSuccess").html('Berhasil mengambil data');
 					$("#successToast").toast('show');
 			      	console.log(data.response.order_list);
-			      	tableUnpaid(data.response.order_list);
+			      	tableInCancel(data.response.order_list);
 			    }
 			})
 			}
 		});
 
-		$("#tUnpaid").on("click", 'td.detailOrdersLazada', function() {
+		$("#tInCancel").on("click", 'td.detailOrdersLazada', function() {
 			console.log(table.row(this).data());
 			const data = table.row(this).data();
 			$.ajax({

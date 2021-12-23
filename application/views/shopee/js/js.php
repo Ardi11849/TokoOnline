@@ -10,6 +10,7 @@
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="<?php echo base_url();?>assets/js/material-dashboard.min.js?v=3.0.0"></script>
+    <script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>
   <script type="text/javascript">
     $("a.shopee").addClass('active bg-gradient-primary');
     $("a.dashboard").removeClass('active bg-gradient-primary');

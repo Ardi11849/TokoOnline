@@ -9,7 +9,7 @@
 		aktifKlik();
 	};
 
-	setInterval(getChat(), 1000 * 20);
+	setInterval(function(){getChat();}, 1000 * 20);
 
 	getChat();
 	function getChat() {

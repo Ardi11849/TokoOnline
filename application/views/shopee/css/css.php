@@ -19,4 +19,5 @@
   <!-- CSS Files -->
   <link id="pagestyle" href="<?php echo base_url()?>assets/css/material-dashboard.css" rel="stylesheet" />
   <link rel="stylesheet" type="text/css" href="<?php echo base_url()?>template/DataTables/datatables.min.css">
+  <link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />
 </head>

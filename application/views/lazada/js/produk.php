@@ -10,7 +10,14 @@
 				columns: [
 					{ data: 'item_id' },
 					{ data: 'attributes.name' },
-					{ data: 'attributes.description' },
+					{ 
+						data: 'attributes.description',
+						render: function(data, type, row){
+							data = data.replace(/<\/?span[^>]*>/g,"");
+							data = data.replace(/<\/?p[^>]*>/g,"");
+							return "<span style='display: block;width: 350px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;'>"+data+"</span>"
+						}
+					},
 					{ data: 'skus.0.price' },
 					{ data: 'skus.0.quantity' },
 					{ 

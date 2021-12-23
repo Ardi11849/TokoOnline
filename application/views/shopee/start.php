@@ -6,6 +6,7 @@
 <body class="g-sidenav-show  bg-gray-200">
 	<?php $this->load->view('template/sidebar');?>
 	<main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+		<?php $this->load->view('shopee/isi/toast'); ?>
 		<?php $this->load->view('shopee/isi/unpaid'); ?>
 		<?php $this->load->view('shopee/isi/invoicePending'); ?>
 		<?php $this->load->view('shopee/isi/readyToShip'); ?>
@@ -19,6 +20,13 @@
 	<?php $this->load->view('template/setting');?>
   <?php $this->load->view('shopee/js/js');?>
   <?php $this->load->view('shopee/js/unpaid');?>
+  <?php $this->load->view('shopee/js/invoicePending');?>
+  <?php $this->load->view('shopee/js/readyToShip');?>
+  <?php $this->load->view('shopee/js/shipped');?>
+  <?php $this->load->view('shopee/js/processed');?>
+  <?php $this->load->view('shopee/js/completed');?>
+  <?php $this->load->view('shopee/js/inCancel');?>
+  <?php $this->load->view('shopee/js/cancelled');?>
 </body>
 
 </html>

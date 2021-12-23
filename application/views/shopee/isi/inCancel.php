@@ -9,6 +9,21 @@
 	            		</div>
 	            		<div class="card-body pb-2">
 	              			<div class="table-responsive p-0">
+							  	<div class="row">
+								    <div class="col">
+								    	<label>Tanggal Awal</label>
+								      <input type="text" class="form-control" id="tanggalAwalInCancel" placeholder="Tanggal awal">
+								    </div>
+								    <div class="col">
+								    	<label>Tanggal Akhir</label>
+								      <input type="text" class="form-control" id="tanggalAkhirInCancel" placeholder="Tanggal akhir">
+								    </div>
+							  	</div>
+							  	<div class="row">
+							  		<div class="col">
+							  			<button class="btn btn-primary" id="btn-searchInCancel"><i class="fa fa-search"></i> Cari</button>
+							  		</div>
+							  	</div>
 				                <table class="table align-items-center mb-0" id="tInCancel">
 				                  <thead>
 				                    <tr>
