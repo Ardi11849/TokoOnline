@@ -41,7 +41,8 @@ class Shopee extends CI_Controller {
 	{
 		$data = $this->Shopee_m->getOrdersShopeeUnpaidV2($this->input->post());
 		// $data = $this->Shopee_m->getOrdersShopeeV1();
-		echo $data;
+		$encode = json_encode($data);
+		echo $encode;
 	}
 
 	public function getProductsShopee()

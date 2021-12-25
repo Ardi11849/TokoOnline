@@ -83,8 +83,8 @@
 			    success: function(data){
 					$("#isiToastSuccess").html('Berhasil mengambil data');
 					$("#successToast").toast('show');
-			      	console.log(data.response.order_list);
-			      	tableProcessed(data.response.order_list);
+			      	console.log(data);
+			      	tableProcessed(data);
 			    }
 			})
 			}

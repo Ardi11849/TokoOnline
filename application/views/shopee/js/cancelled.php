@@ -20,13 +20,13 @@
 				columns: [
 					{ data: 'create_time' },
 					{ data: 'buyer_username' },
-					{ data: 'buyer_user_id' },
+					{ data: 'item_list.0.item_name' },
 					{ data: 'days_to_ship' },
 					{ data: 'estimated_shipping_fee' },
 					{ data: 'payment_method' },
-					{ data: 'shipping_carrier' },
 					{ data: 'total_amount' },
 					{ data: 'order_status' },
+					{ data: 'cancel_reason' },
 					{
 						data: null,
 						className: "dt-center detailOrdersLazada",
@@ -44,30 +44,47 @@
 		            };
 		 
 		            total = api
-		                .column( 7 )
+		                .column( 6 )
 		                .data()
 		                .reduce( function (a, b) {
 		                    return intVal(a) + intVal(b);
 		                }, 0 );
 		 
 		            pageTotal = api
-		                .column( 7, { page: 'current'} )
+		                .column( 6, { page: 'current'} )
 		                .data()
 		                .reduce( function (a, b) {
 		                    return intVal(a) + intVal(b);
 		                }, 0 );
 		 
-		            $( api.column( 1 ).footer() ).html(
+		            $( api.column( 2 ).footer() ).html(
 		                "Total Page ini: "+numberRenderer(pageTotal) +' ( '+numberRenderer(total) +' Total Semua Page)'
 		            );
 		        }
 			});
 		};
 
+		function validasiCancelled(argument) {
+			if ($('#tanggalAwalCancelled').val() == '') {
+				$("#isiToastGagal").html('harap isi tanggal awal');
+				$("#dangerToast").toast('show');
+				return false;
+			} else if ($('#tanggalAkhirCancelled').val() == '') {
+				$("#isiToastGagal").html('harap isi tanggal akhir');
+				$("#dangerToast").toast('show');
+				return false;
+			} else {
+				return true;
+			}
+		}
+
 		$('#btn-searchCancelled').on('click', function() {
-			var dateToInt = parseInt($('#tanggalAkhirCancelled').val().split('-'));
-			var dateFromInt = parseInt($("#tanggalAwalCancelled").val().split('-'));
-			var dateRange = dateToInt - dateFromInt;
+			var dateToInt = $('#tanggalAkhirCancelled').val().split('-');
+			var dateFromInt = $("#tanggalAwalCancelled").val().split('-');
+			var dateRange = (dateToInt[2] + dateToInt[1] + dateToInt[0]) - (dateFromInt[2] + dateFromInt[1] + dateFromInt[0]);
+			console.log($('#tanggalAkhirCancelled').val().split('-')[0]);
+			console.log(dateFromInt);
+			console.log(dateRange);
 			if (dateRange > 15) {
 				$("#isiToastGagal").html('Range Tanggal tidak boleh melebihi 15 hari');
 				$("#dangerToast").toast('show');
@@ -75,18 +92,19 @@
 				$("#isiToastGagal").html('Tanggal akhir harus lebih besar dari tanggal awal');
 				$("#dangerToast").toast('show');
 			} else {
-			$.ajax({
-			    type: 'POST',
-			    url: '<?php echo base_url()?>Shopee/getOrdersShopee',
-			    data: 'dateFrom='+$('#tanggalAwalCancelled').val()+'&dateTo='+$("#tanggalAkhirCancelled").val()+'&type=CANCELLED',
-			    dataType: 'json',
-			    success: function(data){
-					$("#isiToastSuccess").html('Berhasil mengambil data');
-					$("#successToast").toast('show');
-			      	console.log(data.response.order_list);
-			      	tableCancelled(data.response.order_list);
-			    }
-			})
+				if (validasiCancelled() == true) {
+					$.ajax({
+					    type: 'POST',
+					    url: '<?php echo base_url()?>Shopee/getOrdersShopee',
+					    data: 'dateFrom='+$('#tanggalAwalCancelled').val()+'&dateTo='+$("#tanggalAkhirCancelled").val()+'&type=CANCELLED',
+					    dataType: 'json',
+					    success: function(data){
+							$("#isiToastSuccess").html('Berhasil mengambil data');
+							$("#successToast").toast('show');
+					      	tableCancelled(data);
+					    }
+					})
+				}
 			}
 		});
 

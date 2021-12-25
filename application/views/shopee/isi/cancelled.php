@@ -29,13 +29,13 @@
 				                    <tr>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tanggal Pembuatan</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Username Pembeli</th>
-				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Id Pembeli</th>
+				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama Item</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Hari Untuk Di Kirim</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Perkiraan Biaya Pengiriman</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Metode Pembayaran</th>
-				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Operator Pengirim</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Harga Total</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
+				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Alasan Pembatalan</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Action</th>
 				                    </tr>
 				                  </thead>
@@ -43,8 +43,7 @@
 				                  </tbody>
 							        <tfoot>
 							            <tr>
-							                <th colspan="0" style="text-align:left">Total Page Ini:</th>
-							                <th></th>
+							                <th colspan="3"></th>
 							            </tr>
 							        </tfoot>
 				                </table>

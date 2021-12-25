@@ -12,7 +12,8 @@ class Shopee_m extends CI_Model {
 	public function loginShopeeV2()
 	{
 		$path = '/api/v2/shop/auth_partner';
-		$redirect = 'https://phpclusters-61918-0.cloudclusters.net/Shopee/getTokenShopee';
+		// $redirect = 'https://phpclusters-61918-0.cloudclusters.net/Shopee/getTokenShopee';
+		$redirect = base_url().'/Shopee/getTokenShopee';
 		$date = new DateTime();
 		$string = sprintf("%s%s%s", $this->partnerId, $path, $date->getTimestamp());
 		$encrypt = hash_hmac('sha256', $string, $this->partnerKey);
@@ -22,7 +23,8 @@ class Shopee_m extends CI_Model {
 	public function loginShopeeV1()
 	{
 		$path = '/api/v1/shop/auth_partner';
-		$redirect = 'https://phpclusters-61918-0.cloudclusters.net/Shopee/getTokenShopee';
+		// $redirect = 'https://phpclusters-61918-0.cloudclusters.net/Shopee/getTokenShopee';
+		$redirect = base_url().'/Shopee/getTokenShopee';
 		$date = new DateTime();
 		$string = sprintf("%s%s", $this->partnerKey, $redirect);
 		$encrypt = hash('sha256', $string);
@@ -144,8 +146,8 @@ class Shopee_m extends CI_Model {
 		        'timestamp' => $date->getTimestamp(),
 		        'sign' => $encrypt,
 		        'time_range_field' => 'create_time',
-		        'time_from' => $date->modify('-15 days')->getTimestamp(),
-		        'time_to' => $date2->getTimestamp(),
+		        'time_from' => strtotime($dateFrom),
+		        'time_to' => strtotime($dateTo),
 		        'page_size' => 20,
 		        'order_status' => $type
 		    ]
@@ -153,7 +155,16 @@ class Shopee_m extends CI_Model {
 		$body = $response->getBody();
 		$body_json = $body->getContents();
 		$body_array = json_decode($body, true);
-		return $body_json;
+		try {
+			$noSn = null;
+			foreach ($body_array['response']['order_list'] as $key) {
+				$noSn .= $key['order_sn'].',';
+			}
+			$data = $this->getDetailsOrderShopeeV2($noSn);
+			return $data;
+		} catch (Exception $e) {
+			return $e;
+		}
 	}
 
 	public function getOrdersShopeeV1()
@@ -180,16 +191,39 @@ class Shopee_m extends CI_Model {
 		$body = $response->getBody();
 		$body_array = json_decode($body, true);
 		print_r($body_array);
-		try {
-			getDetailsOrderShopeeV2($body_array['response']);
-		} catch ($e) {
-			return $e;
-		}
 	}
 
 	public function getDetailsOrderShopeeV2($data)
 	{
-
+		// var_dump("data dari details= ".$data);die();
+		$path = '/api/v2/order/get_order_detail';
+		$token = $this->session->userdata('accessTokenShopee');
+		$shopId = $this->session->userdata('shopIdShopee');
+		$date = new DateTime();
+		$string = sprintf("%s%s%s%s%s", $this->partnerId, $path, $date->getTimestamp(), $token, $shopId);
+		$encrypt = hash_hmac('sha256', $string, $this->partnerKey);
+		$client = new Client([
+		    'base_uri' => $this->url,
+		    // default timeout 5 detik
+		    'timeout'  => 5,
+		]);
+		 
+		$response = $client->request('GET', $path, [
+		    'query' => [
+		        'shop_id' => $shopId,
+		        'access_token' => $token,
+		        'partner_id' => $this->partnerId,
+		        'timestamp' => $date->getTimestamp(),
+		        'sign' => $encrypt,
+		    	'order_sn_list' => $data,
+		    	'response_optional_fields' => 'buyer_user_id,buyer_username,estimated_shipping_fee,recipient_address,actual_shipping_fee ,goods_to_declare,note,note_update_time,item_list,pay_time,dropshipper,dropshipper_phone,split_up,buyer_cancel_reason,cancel_by,cancel_reason,actual_shipping_fee_confirmed,buyer_cpf_id,fulfillment_flag,pickup_done_time,package_list,shipping_carrier,payment_method,total_amount,buyer_username,invoice_data, checkout_shipping_carrier,reverse_shipping_fee'
+		    ]
+		]);
+		$body = $response->getBody();
+		$body_array = json_decode($body, true);
+		$body_json = $body->getContents();
+		return $body_array['response']['order_list'];
+		// return $body_json;
 	}
 
 	public function getProductsShopeeV2()
