@@ -18,7 +18,13 @@
 				scrollX: true,
 		        data:  data,
 				columns: [
-					{ data: 'create_time' },
+					{ 
+						data: 'create_time', 
+						render: function (data, type, row) {
+							var toDate = new Date(data * 1000).toISOString()
+					        return toDate.substr(0, 10)+' '+toDate.substr(11, 8);
+					    } 
+					},
 					{ data: 'buyer_username' },
 					{ data: 'buyer_user_id' },
 					{ data: 'days_to_ship' },

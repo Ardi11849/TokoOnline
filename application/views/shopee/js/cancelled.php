@@ -14,11 +14,17 @@
 			console.log(data);
 		    table = $('#tCancelled').DataTable({
 				dom: 'Bfrtip',
-				buttons: ['excel', 'pdf', 'print',],
+				buttons: [{extend: 'excel', footer: true}, {extend: 'pdf', footer: true}, {extend: 'print', footer: true}],
 				scrollX: true,
 		        data:  data,
 				columns: [
-					{ data: 'create_time' },
+					{ 
+						data: 'create_time', 
+						render: function (data, type, row) {
+							var toDate = new Date(data * 1000).toISOString()
+					        return toDate.substr(0, 10)+' '+toDate.substr(11, 8);
+					    } 
+					},
 					{ data: 'buyer_username' },
 					{ data: 'item_list.0.item_name' },
 					{ data: 'days_to_ship' },
