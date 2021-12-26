@@ -1,89 +1,130 @@
-<?php
-defined('BASEPATH') OR exit('No direct script access allowed');
-?><!DOCTYPE html>
+<!--
+=========================================================
+* Material Dashboard 2 - v3.0.0
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/material-dashboard
+* Copyright 2021 Creative Tim (https://www.creative-tim.com)
+* Licensed under MIT (https://www.creative-tim.com/license)
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<meta charset="utf-8">
-	<title>Welcome to CodeIgniter</title>
-
-	<style type="text/css">
-
-	::selection { background-color: #E13300; color: white; }
-	::-moz-selection { background-color: #E13300; color: white; }
-
-	body {
-		background-color: #fff;
-		margin: 40px;
-		font: 13px/20px normal Helvetica, Arial, sans-serif;
-		color: #4F5155;
-	}
-
-	a {
-		color: #003399;
-		background-color: transparent;
-		font-weight: normal;
-	}
-
-	h1 {
-		color: #444;
-		background-color: transparent;
-		border-bottom: 1px solid #D0D0D0;
-		font-size: 19px;
-		font-weight: normal;
-		margin: 0 0 14px 0;
-		padding: 14px 15px 10px 15px;
-	}
-
-	code {
-		font-family: Consolas, Monaco, Courier New, Courier, monospace;
-		font-size: 12px;
-		background-color: #f9f9f9;
-		border: 1px solid #D0D0D0;
-		color: #002166;
-		display: block;
-		margin: 14px 0 14px 0;
-		padding: 12px 10px 12px 10px;
-	}
-
-	#body {
-		margin: 0 15px 0 15px;
-	}
-
-	p.footer {
-		text-align: right;
-		font-size: 11px;
-		border-top: 1px solid #D0D0D0;
-		line-height: 32px;
-		padding: 0 10px 0 10px;
-		margin: 20px 0 0 0;
-	}
-
-	#container {
-		margin: 10px;
-		border: 1px solid #D0D0D0;
-		box-shadow: 0 0 8px #D0D0D0;
-	}
-	</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="apple-touch-icon" sizes="76x76" href="<?php echo base_url()?>assets/img/apple-icon.png">
+  <link rel="icon" type="image/png" href="<?php echo base_url()?>assets/img/favicon.png">
+  <title>
+    Login
+  </title>
+  <!--     Fonts and icons     -->
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
+  <!-- Nucleo Icons -->
+  <link href="<?php echo base_url()?>assets/css/nucleo-icons.css" rel="stylesheet" />
+  <link href="<?php echo base_url()?>assets/css/nucleo-svg.css" rel="stylesheet" />
+  <!-- Font Awesome Icons -->
+  <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <!-- CSS Files -->
+  <link id="pagestyle" href="<?php echo base_url()?>assets/css/material-dashboard.css?v=3.0.0" rel="stylesheet" />
 </head>
-<body>
 
-<div id="container">
-	<h1>Welcome to CodeIgniter!</h1>
-
-	<div id="body">
-		<p>The page you are looking at is being generated dynamically by CodeIgniter.</p>
-
-		<p>If you would like to edit this page you'll find it located at:</p>
-		<code>application/views/welcome_message.php</code>
-
-		<p>The corresponding controller for this page is found at:</p>
-		<code>application/controllers/Welcome.php</code>
-
-		<p>If you are exploring CodeIgniter for the very first time, you should start by reading the <a href="user_guide/">User Guide</a>.</p>
-	</div>
-
-	<p class="footer">Page rendered in <strong>{elapsed_time}</strong> seconds. <?php echo  (ENVIRONMENT === 'development') ?  'CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?></p>
-</div>
-
+<body class="bg-gray-200">
+  <main class="main-content  mt-0">
+    <div class="page-header align-items-start min-vh-100" style="background-image: url('https://images.unsplash.com/photo-1497294815431-9365093b7331?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1950&q=80');">
+      <span class="mask bg-gradient-dark opacity-6"></span>
+      <div class="container my-auto">
+        <div class="row">
+          <div class="col-lg-4 col-md-8 col-12 mx-auto">
+            <div class="card z-index-0 fadeIn3 fadeInBottom">
+              <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                <div class="bg-gradient-primary shadow-primary border-radius-lg py-3 pe-1">
+                  <h4 class="text-white font-weight-bolder text-center mt-2 mb-0">Login</h4>
+                </div>
+              </div>
+              <div class="card-body">
+              	<p align="center"><i class="fa fa-lock fa-3x"></i></p>
+                <form role="form" class="text-start">
+                  <div class="input-group input-group-outline my-3">
+                    <label class="form-label">Username</label>
+                    <input type="email" class="form-control">
+                  </div>
+                  <div class="input-group input-group-outline mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control">
+                  </div>
+                  <div class="text-center">
+                    <button type="button" class="btn bg-gradient-primary w-100 my-4 mb-2" id="masuk">Sign in</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer class="footer position-absolute bottom-2 py-2 w-100">
+        <div class="container">
+          <div class="row align-items-center justify-content-lg-between">
+            <div class="col-12 col-md-6 my-auto">
+              <div class="copyright text-center text-sm text-white text-lg-start">
+                © <script>
+                  document.write(new Date().getFullYear())
+                </script>,
+                made with <i class="fa fa-heart" aria-hidden="true"></i> by
+                <a href="https://www.creative-tim.com" class="font-weight-bold text-white" target="_blank">Creative Tim</a>
+                for a better web.
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <ul class="nav nav-footer justify-content-center justify-content-lg-end">
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com" class="nav-link text-white" target="_blank">Creative Tim</a>
+                </li>
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com/presentation" class="nav-link text-white" target="_blank">About Us</a>
+                </li>
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com/blog" class="nav-link text-white" target="_blank">Blog</a>
+                </li>
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-white" target="_blank">License</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </main>
+  <!--   Core JS Files   -->
+  <script src="<?php echo base_url()?>assets/js/core/popper.min.js"></script>
+  <script src="<?php echo base_url()?>assets/js/core/bootstrap.min.js"></script>
+  <script src="<?php echo base_url()?>assets/js/plugins/perfect-scrollbar.min.js"></script>
+  <script src="<?php echo base_url()?>assets/js/plugins/smooth-scrollbar.min.js"></script>
+  <script src="<?php echo base_url()?>assets/js/jquery.min.js"></script>
+  <script>
+    var win = navigator.platform.indexOf('Win') > -1;
+    if (win && document.querySelector('#sidenav-scrollbar')) {
+      var options = {
+        damping: '0.5'
+      }
+      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    }
+    $("#masuk").on('click', function() {
+    	window.location.replace('<?php echo base_url()?>Dashboard');
+    })
+  </script>
+  <!-- Github buttons -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+  <script src="<?php echo base_url()?>assets/js/material-dashboard.min.js?v=3.0.0"></script>
 </body>
+
 </html>
