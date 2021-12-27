@@ -26,7 +26,7 @@
 					    } 
 					},
 					{ data: 'buyer_username' },
-					{ data: 'buyer_user_id' },
+					{ data: 'item_list.0.item_name' },
 					{ data: 'days_to_ship' },
 					{ data: 'estimated_shipping_fee' },
 					{ data: 'payment_method' },

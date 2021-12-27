@@ -88,8 +88,26 @@ class Shopee_m extends CI_Model {
 		$this->session->set_userdata('statusAccountShopee', $body_array['status']);
 		$this->session->set_userdata('waktuMasukShopee', $body_array['auth_time']);
 		$this->session->set_userdata('expiresAccountShopee', $body_array['expire_time']);
-		return $body_array;
+		$this->session->set_userdata('accountShopee', $body_array['shop_name']);
+		$this->session->set_userdata('statusAccountShopee', $body_array['status']);
+		$this->session->set_userdata('waktuMasukShopee', $body_array['auth_time']);
+		$this->session->set_userdata('expiresAccountShopee', $body_array['expire_time']);
 		// var_dump($this->session->userdata());die();
+		$insert = $this->db->query("replace into tbl_user_shopee
+			(id_user_shopee, id_user, id_seller, nama_shop, akses_token, expired_token, refresh_token, created_by, created_on)
+			values (
+			'".$this->session->userdata('shopIdShopee')."',
+			'".$this->session->userdata('id')."',
+			'".$this->session->userdata('shopIdShopee')."',
+			'".$this->session->userdata('accountShopee')."',
+			'".$this->session->userdata('accessTokenShopee')."',
+			'".$this->session->userdata('expiresTokenShopee')."',
+			'".$this->session->userdata('refreshTokenShopee')."',
+			'".$this->session->userdata('id')."',
+			'".date('d-m-Y')."'
+		)");
+		// var_dump($insert);die();
+		return $body_array;
 	}
 
 	public function getShopInfoV1()
@@ -114,10 +132,6 @@ class Shopee_m extends CI_Model {
 		$body = $response->getBody();
 		$body_array = json_decode($body, true);
 		print_r($body_array);
-		$this->session->set_userdata('accountShopee', $body_array['shop_name']);
-		$this->session->set_userdata('statusAccountShopee', $body_array['status']);
-		$this->session->set_userdata('waktuMasukShopee', $body_array['auth_time']);
-		$this->session->set_userdata('expiresAccountShopee', $body_array['expire_time']);
 		// return $body_array;
 	}
 
@@ -156,6 +170,7 @@ class Shopee_m extends CI_Model {
 		$body = $response->getBody();
 		$body_json = $body->getContents();
 		$body_array = json_decode($body, true);
+		if ($body_array['error'] != '') return $body_array;
 		try {
 			$noSn = null;
 			foreach ($body_array['response']['order_list'] as $key) {
@@ -223,8 +238,9 @@ class Shopee_m extends CI_Model {
 		$body = $response->getBody();
 		$body_array = json_decode($body, true);
 		$body_json = $body->getContents();
+		// var_dump($body_array);die();
+		if ($body_array['error'] != '') return $body_array;
 		return $body_array['response']['order_list'];
-		// return $body_json;
 	}
 
 	public function getProductsShopeeV2()
