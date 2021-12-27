@@ -37,6 +37,7 @@
 </head>
 
 <body class="bg-gray-200">
+    <?php $this->load->view('template/toast'); ?>
   <main class="main-content  mt-0">
     <div class="page-header align-items-start min-vh-100" style="background-image: url('https://images.unsplash.com/photo-1497294815431-9365093b7331?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1950&q=80');">
       <span class="mask bg-gradient-dark opacity-6"></span>
@@ -54,11 +55,11 @@
                 <form role="form" class="text-start">
                   <div class="input-group input-group-outline my-3">
                     <label class="form-label">Username</label>
-                    <input type="email" class="form-control">
+                    <input type="username" id="namaUser" class="form-control">
                   </div>
                   <div class="input-group input-group-outline mb-3">
                     <label class="form-label">Password</label>
-                    <input type="password" class="form-control">
+                    <input type="password" id="password" class="form-control">
                   </div>
                   <div class="text-center">
                     <button type="button" class="btn bg-gradient-primary w-100 my-4 mb-2" id="masuk">Sign in</button>
@@ -118,7 +119,21 @@
       Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
     $("#masuk").on('click', function() {
-    	window.location.replace('<?php echo base_url()?>Dashboard');
+    	// window.location.replace('<?php echo base_url()?>Dashboard');
+      $.ajax({
+        type: 'post',
+        url: '<?php echo base_url()?>Welcome/login',
+        dataType: 'json',
+        data: 'namaUser='+$('#namaUser').val()+'&password='+$('#password').val(),
+        success: function (data) {
+          if (data === 1) {
+            window.location.replace('<?php echo base_url()?>Dashboard');
+          } else {
+            $("#isiToastGagal").html('Periksa kembali username dan password anda');
+            $("#dangerToast").toast('show');
+          }
+        }
+      })
     })
   </script>
   <!-- Github buttons -->

@@ -9,6 +9,7 @@ class Shopee extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->model('Shopee_m');
+		if (!$this->session->userdata('id')) redirect(base_url(),'refresh');
 	}
 
 	public function index()

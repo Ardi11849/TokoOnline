@@ -89,6 +89,7 @@ class Shopee_m extends CI_Model {
 		$this->session->set_userdata('waktuMasukShopee', $body_array['auth_time']);
 		$this->session->set_userdata('expiresAccountShopee', $body_array['expire_time']);
 		return $body_array;
+		// var_dump($this->session->userdata());die();
 	}
 
 	public function getShopInfoV1()

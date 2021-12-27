@@ -6,6 +6,7 @@
 <body class="g-sidenav-show  bg-gray-200">
 	<?php $this->load->view('template/sidebar');?>
 	<main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+		<?php $this->load->view('template/toast'); ?>
 		<?php $this->load->view('lazada/isi/chat'); ?>
 		<?php $this->load->view('lazada/isi/order'); ?>
 		<?php $this->load->view('lazada/isi/produk'); ?>

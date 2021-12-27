@@ -22,4 +22,28 @@ class Welcome extends CI_Controller {
 	{
 		$this->load->view('welcome_message');
 	}
+
+	public function login()
+	{
+		$data = $this->db->get_where('tbl_user', array('nm_user' => $this->input->post('namaUser'), 'password' => $this->input->post('password')))->result_array();
+		if (count($data) >= 1) {
+			foreach ($data as $key) {
+				$this->session->set_userdata('id', $key['id_user']);
+				$this->session->set_userdata('namaUser', $key['nm_user']);
+				$this->session->set_userdata('alamat', $key['alamat']);
+				$this->session->set_userdata('telp', $key['tlp']);
+				$this->session->set_userdata('status', $key['status']);
+			}
+			echo '1';
+		}else{
+			echo '0';
+		}
+
+	}
+
+	public function logout()
+	{
+		session_destroy();
+		redirect(base_url(),'refresh');
+	}
 }

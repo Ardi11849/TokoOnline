@@ -7,6 +7,7 @@ class Lazada extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->model('Lazada_m');
+		if (!$this->session->userdata('id')) redirect(base_url(),'refresh');
 	}
 
 	public function index()
