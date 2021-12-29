@@ -179,6 +179,17 @@ class Shopee_m extends CI_Model {
 		$dateFrom = $data['dateFrom'];
 		$dateTo = $data['dateTo'];
 		$type = $data['type'];
+		if (isset($data['length'])) {
+			$length = $data['length'];
+		}else{
+			$length = 50;
+		}
+		if (isset($data['start'])) {
+			$cursor = $data['start'];
+		} else {
+			$cursor = 0;
+		}
+		
 		$string = sprintf("%s%s%s%s%s", $this->partnerId, $path, $date->getTimestamp(), $token, $shopId);
 		$encrypt = hash_hmac('sha256', $string, $this->partnerKey);
 		try {
@@ -199,8 +210,8 @@ class Shopee_m extends CI_Model {
 			        'time_from' => strtotime($dateFrom),
 			        'time_to' => strtotime($dateTo),
 			        // 'page_size' => 50,
-			        'page_size' => $data['length'],
-			        'cursor' => $data['start'],
+			        'page_size' => $length,
+			        'cursor' => $cursor,
 			        'order_status' => $type
 			    ]
 			]);
@@ -254,7 +265,7 @@ class Shopee_m extends CI_Model {
 			        'time_to' => strtotime($dateTo),
 			        // 'page_size' => 50,
 			        'page_size' => $data['length'],
-			        'cursor' => $data['start']
+			        'page_no' => $data['start']
 			    ]
 			]);
 			$body = $response->getBody();
