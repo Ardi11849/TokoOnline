@@ -7,26 +7,28 @@
 	<?php $this->load->view('template/sidebar');?>
 	<main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
 		<?php $this->load->view('template/toast'); ?>
-		<?php $this->load->view('shopee/isi/unpaid'); ?>
-		<?php $this->load->view('shopee/isi/invoicePending'); ?>
-		<?php $this->load->view('shopee/isi/readyToShip'); ?>
-		<?php $this->load->view('shopee/isi/shipped'); ?>
-		<?php $this->load->view('shopee/isi/processed'); ?>
-		<?php $this->load->view('shopee/isi/completed'); ?>
-		<?php $this->load->view('shopee/isi/inCancel'); ?>
-		<?php $this->load->view('shopee/isi/cancelled'); ?>
+		<?php $this->load->view('shopee/isi/order/unpaid'); ?>
+		<?php $this->load->view('shopee/isi/order/invoicePending'); ?>
+		<?php $this->load->view('shopee/isi/order/readyToShip'); ?>
+		<?php $this->load->view('shopee/isi/order/shipped'); ?>
+		<?php $this->load->view('shopee/isi/order/processed'); ?>
+		<?php $this->load->view('shopee/isi/order/completed'); ?>
+		<?php $this->load->view('shopee/isi/order/inCancel'); ?>
+		<?php $this->load->view('shopee/isi/order/cancelled'); ?>
+		<?php $this->load->view('shopee/isi/return/return'); ?>
 		<?php $this->load->view('template/footer'); ?>
 	</main>
 	<?php $this->load->view('template/setting');?>
-  <?php $this->load->view('shopee/js/js');?>
-  <?php $this->load->view('shopee/js/unpaid');?>
-  <?php $this->load->view('shopee/js/invoicePending');?>
-  <?php $this->load->view('shopee/js/readyToShip');?>
-  <?php $this->load->view('shopee/js/shipped');?>
-  <?php $this->load->view('shopee/js/processed');?>
-  <?php $this->load->view('shopee/js/completed');?>
-  <?php $this->load->view('shopee/js/inCancel');?>
-  <?php $this->load->view('shopee/js/cancelled');?>
+  <?php $this->load->view('shopee/js/order/js');?>
+  <?php $this->load->view('shopee/js/order/unpaid');?>
+  <?php $this->load->view('shopee/js/order/invoicePending');?>
+  <?php $this->load->view('shopee/js/order/readyToShip');?>
+  <?php $this->load->view('shopee/js/order/shipped');?>
+  <?php $this->load->view('shopee/js/order/processed');?>
+  <?php $this->load->view('shopee/js/order/completed');?>
+  <?php $this->load->view('shopee/js/order/inCancel');?>
+  <?php $this->load->view('shopee/js/order/cancelled');?>
+  <?php $this->load->view('shopee/js/return/return');?>
 </body>
 
 </html>

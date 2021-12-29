@@ -14,7 +14,18 @@ class Shopee extends CI_Controller {
 
 	public function index()
 	{
-		$this->load->view('shopee/start');
+		$akun_shopee['akun'] = $this->Shopee_m->getShopFromDB();
+		$this->load->view('shopee/start', $akun_shopee);
+	}
+
+	public function setSession()
+	{
+	    $this->session->set_userdata('shopIdShopee', intval($this->input->post('id')));
+	    $this->session->set_userdata('accessTokenShopee', $this->input->post('token'));
+	    $this->session->set_userdata('expiresTokenShopee', $this->input->post('expired'));
+	    $this->session->set_userdata('refreshTokenShopee', $this->input->post('refresh_token'));
+	    $this->session->set_userdata('accountShopee', $this->input->post('namaShop'));
+	    echo 1;
 	}
 
 	public function loginShopee()
@@ -40,10 +51,33 @@ class Shopee extends CI_Controller {
 
 	public function getOrdersShopee()
 	{
-		$data = $this->Shopee_m->getOrdersShopeeUnpaidV2($this->input->post());
+		// var_dump($this->input->post());die();
+		// $data = [];
+		// $data['draw'] = $this->input->post();
+		// $data['recordsFiltered'] = $this->input->post('length');
+		$data = $this->Shopee_m->getOrdersShopeeV2($this->input->post());
 		// $data = $this->Shopee_m->getOrdersShopeeV1();
-		$encode = json_encode($data);
-		echo $encode;
+		// var_dump($data);die();
+		if (is_array($data)) {
+			$encode = json_encode($data);
+			echo $encode;
+		} else {
+			echo $data;
+		}
+		
+	}
+
+	public function getReturnShopee()
+	{
+		$data = $this->Shopee_m->getReturnShopeeV2($this->input->post());
+		// $data = $this->Shopee_m->getOrdersShopeeV1();
+		// var_dump($data);die();
+		if (is_array($data)) {
+			$encode = json_encode($data);
+			echo $encode;
+		} else {
+			echo $data;
+		}
 	}
 
 	public function getProductsShopee()

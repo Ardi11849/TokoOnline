@@ -11,7 +11,7 @@
 		var table;
 		var numberRenderer = $.fn.dataTable.render.number( ',', '.', 0, 'Rp. '  ).display;
 		function tableShipped(data) {
-			console.log(data);
+			$('#tShipped').DataTable().destroy();
 		    table = $('#tShipped').DataTable({
 				dom: 'Bfrtip',
 				buttons: ['excel', 'pdf', 'print',],
@@ -71,28 +71,36 @@
 		};
 
 		$('#btn-searchShipped').on('click', function() {
-			var dateToInt = parseInt($('#tanggalAkhirShipped').val().split('-'));
-			var dateFromInt = parseInt($("#tanggalAwalShipped").val().split('-'));
-			var dateRange = dateToInt - dateFromInt;
+			var dateToInt = $('#tanggalAkhirShipped').val().split('-');
+			var dateFromInt = $("#tanggalAwalShipped").val().split('-');
+			const oneDay = 24 * 60 * 60 * 1000;
+			const fDate = new Date(dateToInt[2], dateToInt[1], dateToInt[0]);
+			const tDate = new Date(dateFromInt[2], dateFromInt[1], dateFromInt[0]);
+			const dateRange = Math.round(Math.abs((fDate - tDate) / oneDay));
+			console.log(dateRange);
 			if (dateRange > 15) {
 				$("#isiToastGagal").html('Range Tanggal tidak boleh melebihi 15 hari');
 				$("#dangerToast").toast('show');
-			} else if (dateToInt < dateFromInt) {
+			} else if (dateToInt[2]+dateToInt[1]+dateToInt[0] < dateFromInt[2]+dateFromInt[1]+dateFromInt[0]) {
 				$("#isiToastGagal").html('Tanggal akhir harus lebih besar dari tanggal awal');
 				$("#dangerToast").toast('show');
 			} else {
-			$.ajax({
-			    type: 'POST',
-			    url: '<?php echo base_url()?>Shopee/getOrdersShopee',
-			    data: 'dateFrom='+$('#tanggalAwalShipped').val()+'&dateTo='+$("#tanggalAkhirShipped").val()+'&type=SHIPPED',
-			    dataType: 'json',
-			    success: function(data){
-					$("#isiToastSuccess").html('Berhasil mengambil data');
-					$("#successToast").toast('show');
-			      	console.log(data);
-			      	tableShipped(data);
-			    }
-			})
+				$.ajax({
+				    type: 'POST',
+				    url: '<?php echo base_url()?>Shopee/getOrdersShopee',
+				    data: 'dateFrom='+$('#tanggalAwalShipped').val()+'&dateTo='+$("#tanggalAkhirShipped").val()+'&type=SHIPPED',
+				    dataType: 'json',
+				    success: function(data){
+				    	if (data.message != '' || data.message === undefined) {
+							$("#isiToastSuccess").html('Berhasil mengambil data');
+							$("#successToast").toast('show');
+						}else{
+							$("#isiToastGagal").html('Message: '+data.message.split(',')[1]+' <p>Jika error refresh_token harap login ulang akun online shop anda</p>');
+							$("#dangerToast").toast('show');
+				    	}
+				      	tableShipped(data);
+				    }
+				})
 			}
 		});
 

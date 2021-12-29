@@ -1,22 +1,49 @@
 <script type="text/javascript">
 	$(document).ready( function () {
-		$('#tanggalAwalCancelled').datepicker({
+		$('#tanggalAwalReturn').datepicker({
 			uiLibrary: 'bootstrap4',
 			format: 'dd-mm-yyyy'
 		});
-		$('#tanggalAkhirCancelled').datepicker({
+		$('#tanggalAkhirReturn').datepicker({
 			uiLibrary: 'bootstrap4',
 			format: 'dd-mm-yyyy'
 		});
 		var table;
 		var numberRenderer = $.fn.dataTable.render.number( ',', '.', 0, 'Rp. '  ).display;
-		function tableCancelled(data) {
-			console.log(data);
-		    table = $('#tCancelled').DataTable({
+		// function tableReturn(data) {
+		function tableReturn(from, to) {
+			$('#tReturn').DataTable().destroy();
+		    return table = $('#tReturn').DataTable({
 				dom: 'Bfrtip',
 				buttons: [{extend: 'excel', footer: true}, {extend: 'pdf', footer: true}, {extend: 'print', footer: true}],
 				scrollX: true,
-		        data:  data,
+				ordering: false,
+				paging: true,
+				processing: true,
+				serverSide: true,
+				"pageLength": 10,
+				ajax: {
+				  url: '<?php echo base_url()?>Shopee/getReturnShopee',
+				  type:'POST',
+				  data: {
+				  	dateFrom: from,
+				  	dateTo: to,
+				  },
+			      "error": function (e) {
+			      	return e
+			      },
+			      "dataSrc": function (d) {
+			    	if (d.message === '' || d.message === undefined) {
+						$("#isiToastSuccess").html('Berhasil mengambil data');
+						$("#successToast").toast('show');
+					}else{
+						$("#isiToastGagal").html('Message: '+d.message+' <p>Jika error refresh_token harap login ulang akun online shop anda</p>');
+						$("#dangerToast").toast('show');
+			    	}
+			         return d
+			      }
+				},
+		  //       data:  data,
 				columns: [
 					{ 
 						data: 'create_time', 
@@ -70,12 +97,12 @@
 			});
 		};
 
-		function validasiCancelled(argument) {
-			if ($('#tanggalAwalCancelled').val() == '') {
+		function validasiReturn(argument) {
+			if ($('#tanggalAwalReturn').val() == '') {
 				$("#isiToastGagal").html('harap isi tanggal awal');
 				$("#dangerToast").toast('show');
 				return false;
-			} else if ($('#tanggalAkhirCancelled').val() == '') {
+			} else if ($('#tanggalAkhirReturn').val() == '') {
 				$("#isiToastGagal").html('harap isi tanggal akhir');
 				$("#dangerToast").toast('show');
 				return false;
@@ -84,37 +111,45 @@
 			}
 		}
 
-		$('#btn-searchCancelled').on('click', function() {
-			var dateToInt = $('#tanggalAkhirCancelled').val().split('-');
-			var dateFromInt = $("#tanggalAwalCancelled").val().split('-');
-			var dateRange = (dateToInt[2] + dateToInt[1] + dateToInt[0]) - (dateFromInt[2] + dateFromInt[1] + dateFromInt[0]);
-			console.log($('#tanggalAkhirCancelled').val().split('-')[0]);
-			console.log(dateFromInt);
+		$('#btn-searchReturn').on('click', function() {
+			const dateToInt = $('#tanggalAkhirReturn').val().split('-');
+			const dateFromInt = $("#tanggalAwalReturn").val().split('-');
+			const oneDay = 24 * 60 * 60 * 1000;
+			const fDate = new Date(dateToInt[2], dateToInt[1], dateToInt[0]);
+			const tDate = new Date(dateFromInt[2], dateFromInt[1], dateFromInt[0]);
+			const dateRange = Math.round(Math.abs((fDate - tDate) / oneDay));
 			console.log(dateRange);
 			if (dateRange > 15) {
 				$("#isiToastGagal").html('Range Tanggal tidak boleh melebihi 15 hari');
 				$("#dangerToast").toast('show');
-			} else if (dateToInt < dateFromInt) {
+			} else if (dateToInt[2]+dateToInt[1]+dateToInt[0] < dateFromInt[2]+dateFromInt[1]+dateFromInt[0]) {
 				$("#isiToastGagal").html('Tanggal akhir harus lebih besar dari tanggal awal');
 				$("#dangerToast").toast('show');
 			} else {
-				if (validasiCancelled() == true) {
-					$.ajax({
-					    type: 'POST',
-					    url: '<?php echo base_url()?>Shopee/getOrdersShopee',
-					    data: 'dateFrom='+$('#tanggalAwalCancelled').val()+'&dateTo='+$("#tanggalAkhirCancelled").val()+'&type=CANCELLED',
-					    dataType: 'json',
-					    success: function(data){
-							$("#isiToastSuccess").html('Berhasil mengambil data');
-							$("#successToast").toast('show');
-					      	tableCancelled(data);
-					    }
-					})
+				if (validasiReturn() == true) {
+					tableReturn($('#tanggalAwalReturn').val(), $("#tanggalAkhirReturn").val());
+					// $.ajax({
+					//     type: 'POST',
+					//     url: '<?php echo base_url()?>Shopee/getOrdersShopee',
+					//     data: 'dateFrom='+$('#tanggalAwalReturn').val()+'&dateTo='+$("#tanggalAkhirReturn").val()+'&type=Return',
+					//     dataType: 'json',
+					//     success: function(data){
+					//     console.log(data.message);
+					//     	if (data.message === '' || data.message === undefined) {
+					// 			$("#isiToastSuccess").html('Berhasil mengambil data');
+					// 			$("#successToast").toast('show');
+					// 		}else{
+					// 			$("#isiToastGagal").html('Message: '+data.message.split(',')[1]+' <p>Jika error refresh_token harap login ulang akun online shop anda</p>');
+					// 			$("#dangerToast").toast('show');
+					//     	}
+					// 	    tableReturn(data);
+					//     }
+					// })
 				}
 			}
 		});
 
-		$("#tCancelled").on("click", 'td.detailOrdersLazada', function() {
+		$("#tReturn").on("click", 'td.detailOrdersLazada', function() {
 			console.log(table.row(this).data());
 			const data = table.row(this).data();
 			$.ajax({
@@ -128,5 +163,9 @@
 			    }
 			})
 		});
+		$('#tReturn').on( 'page.dt', function () {
+		    var info = table.page.info();
+		    console.log(info);
+		} );
 	} );
 </script>

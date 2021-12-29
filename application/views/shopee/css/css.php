@@ -19,5 +19,5 @@
   <!-- CSS Files -->
   <link id="pagestyle" href="<?php echo base_url()?>assets/css/material-dashboard.css" rel="stylesheet" />
   <link rel="stylesheet" type="text/css" href="<?php echo base_url()?>template/DataTables/datatables.min.css">
-  <link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+  <link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" /><link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>

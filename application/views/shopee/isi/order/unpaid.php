@@ -3,8 +3,14 @@
 		<nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" navbar-scroll="true">
 	    	<div class="container-fluid py-1 px-3">
 	        	<nav aria-label="breadcrumb">
-	          		<h6 class="font-weight-bolder mb-0">Akun: <?php
-	          			var_dump($this->session->userdata('accountShopee'));?></h6>
+	          		<h6>Akun: 
+	          			<select class="form-control" style="width: 300px;" id="selectAkunShopee">
+		          			<option>Pilih akun shopee</option>
+		          			<?php foreach ($akun as $data) { ?>
+		          				<option data-id="<?php echo $data['id_seller']?>" data-namaShop="<?php echo $data['nama_shop']?>" data-token="<?php echo $data['akses_token']?>" data-expired="<?php echo $data['expired_token']?>" data-refreshToken="<?php echo $data['refresh_token']?>" value="<?php echo $data['id_seller']?>"><?php echo $data['nama_shop']?></option>
+		          			<?php } ?>
+		          		</select>
+		          	</h6>
 	        	</nav>
 		        <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
 		        	<div class="ms-md-auto pe-md-3 d-flex align-items-center">

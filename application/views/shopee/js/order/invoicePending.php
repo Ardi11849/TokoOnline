@@ -1,18 +1,18 @@
 <script type="text/javascript">
 	$(document).ready( function () {
-		$('#tanggalAwalUnpaid').datepicker({
+		$('#tanggalAwalInvoicePending').datepicker({
 			uiLibrary: 'bootstrap4',
 			format: 'dd-mm-yyyy'
 		});
-		$('#tanggalAkhirUnpaid').datepicker({
+		$('#tanggalAkhirInvoicePending').datepicker({
 			uiLibrary: 'bootstrap4',
 			format: 'dd-mm-yyyy'
 		});
 		var table;
 		var numberRenderer = $.fn.dataTable.render.number( ',', '.', 0, 'Rp. '  ).display;
-		function tableUnpaid(data) {
-			console.log(data);
-		    table = $('#tUnpaid').DataTable({
+		function tableInvoicePending(data) {
+			$('#tInvoicePending').DataTable().destroy();
+		    table = $('#tInvoicePending').DataTable({
 				dom: 'Bfrtip',
 				buttons: ['excel', 'pdf', 'print',],
 				scrollX: true,
@@ -70,33 +70,41 @@
 			});
 		};
 
-		$('#btn-searchUnpaid').on('click', function() {
-			var dateToInt = parseInt($('#tanggalAkhirUnpaid').val().split('-'));
-			var dateFromInt = parseInt($("#tanggalAwalUnpaid").val().split('-'));
-			var dateRange = dateToInt - dateFromInt;
+		$('#btn-searchInvoicePending').on('click', function() {
+			var dateToInt = $('#tanggalAkhirInvoicePending').val().split('-');
+			var dateFromInt = $("#tanggalAwalInvoicePending").val().split('-');
+			const oneDay = 24 * 60 * 60 * 1000;
+			const fDate = new Date(dateToInt[2], dateToInt[1], dateToInt[0]);
+			const tDate = new Date(dateFromInt[2], dateFromInt[1], dateFromInt[0]);
+			const dateRange = Math.round(Math.abs((fDate - tDate) / oneDay));
+			console.log(dateRange);
 			if (dateRange > 15) {
 				$("#isiToastGagal").html('Range Tanggal tidak boleh melebihi 15 hari');
 				$("#dangerToast").toast('show');
-			} else if (dateToInt < dateFromInt) {
+			} else if (dateToInt[2]+dateToInt[1]+dateToInt[0] < dateFromInt[2]+dateFromInt[1]+dateFromInt[0]) {
 				$("#isiToastGagal").html('Tanggal akhir harus lebih besar dari tanggal awal');
 				$("#dangerToast").toast('show');
 			} else {
-			$.ajax({
-			    type: 'POST',
-			    url: '<?php echo base_url()?>Shopee/getOrdersShopee',
-			    data: 'dateFrom='+$('#tanggalAwalUnpaid').val()+'&dateTo='+$("#tanggalAkhirUnpaid").val()+'&type=UNPAID',
-			    dataType: 'json',
-			    success: function(data){
-					$("#isiToastSuccess").html('Berhasil mengambil data');
-					$("#successToast").toast('show');
-			      	console.log(data);
-			      	tableUnpaid(data);
-			    }
-			})
+				$.ajax({
+				    type: 'POST',
+				    url: '<?php echo base_url()?>Shopee/getOrdersShopee',
+				    data: 'dateFrom='+$('#tanggalAwalInvoicePending').val()+'&dateTo='+$("#tanggalAkhirInvoicePending").val()+'&type=INVOICE_PENDING',
+				    dataType: 'json',
+				    success: function(data){
+				    	if (data.message != '' || data.message === undefined) {
+							$("#isiToastSuccess").html('Berhasil mengambil data');
+							$("#successToast").toast('show');
+						}else{
+							$("#isiToastGagal").html('Message: '+data.message.split(',')[1]+' <p>Jika error refresh_token harap login ulang akun online shop anda</p>');
+							$("#dangerToast").toast('show');
+				    	}
+				    	tableInvoicePending(data);
+				    }
+				})
 			}
 		});
 
-		$("#tUnpaid").on("click", 'td.detailOrdersLazada', function() {
+		$("#tInvoicePending").on("click", 'td.detailOrdersLazada', function() {
 			console.log(table.row(this).data());
 			const data = table.row(this).data();
 			$.ajax({

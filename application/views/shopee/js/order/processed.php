@@ -1,18 +1,18 @@
 <script type="text/javascript">
 	$(document).ready( function () {
-		$('#tanggalAwalInvoicePending').datepicker({
+		$('#tanggalAwalProcessed').datepicker({
 			uiLibrary: 'bootstrap4',
 			format: 'dd-mm-yyyy'
 		});
-		$('#tanggalAkhirInvoicePending').datepicker({
+		$('#tanggalAkhirProcessed').datepicker({
 			uiLibrary: 'bootstrap4',
 			format: 'dd-mm-yyyy'
 		});
 		var table;
 		var numberRenderer = $.fn.dataTable.render.number( ',', '.', 0, 'Rp. '  ).display;
-		function tableInvoicePending(data) {
-			console.log(data);
-		    table = $('#tInvoicePending').DataTable({
+		function tableProcessed(data) {
+			$('#tProcessed').DataTable().destroy();
+		    table = $('#tProcessed').DataTable({
 				dom: 'Bfrtip',
 				buttons: ['excel', 'pdf', 'print',],
 				scrollX: true,
@@ -26,7 +26,7 @@
 					    } 
 					},
 					{ data: 'buyer_username' },
-					{ data: 'buyer_user_id' },
+					{ data: 'item_list.0.item_name' },
 					{ data: 'days_to_ship' },
 					{ data: 'estimated_shipping_fee' },
 					{ data: 'payment_method' },
@@ -70,33 +70,41 @@
 			});
 		};
 
-		$('#btn-searchInvoicePending').on('click', function() {
-			var dateToInt = parseInt($('#tanggalAkhirInvoicePending').val().split('-'));
-			var dateFromInt = parseInt($("#tanggalAwalInvoicePending").val().split('-'));
-			var dateRange = dateToInt - dateFromInt;
+		$('#btn-searchProcessed').on('click', function() {
+			var dateToInt = $('#tanggalAkhirProcessed').val().split('-');
+			var dateFromInt = $("#tanggalAwalProcessed").val().split('-');
+			const oneDay = 24 * 60 * 60 * 1000;
+			const fDate = new Date(dateToInt[2], dateToInt[1], dateToInt[0]);
+			const tDate = new Date(dateFromInt[2], dateFromInt[1], dateFromInt[0]);
+			const dateRange = Math.round(Math.abs((fDate - tDate) / oneDay));
+			console.log(dateRange);
 			if (dateRange > 15) {
 				$("#isiToastGagal").html('Range Tanggal tidak boleh melebihi 15 hari');
 				$("#dangerToast").toast('show');
-			} else if (dateToInt < dateFromInt) {
+			} else if (dateToInt[2]+dateToInt[1]+dateToInt[0] < dateFromInt[2]+dateFromInt[1]+dateFromInt[0]) {
 				$("#isiToastGagal").html('Tanggal akhir harus lebih besar dari tanggal awal');
 				$("#dangerToast").toast('show');
 			} else {
-			$.ajax({
-			    type: 'POST',
-			    url: '<?php echo base_url()?>Shopee/getOrdersShopee',
-			    data: 'dateFrom='+$('#tanggalAwalInvoicePending').val()+'&dateTo='+$("#tanggalAkhirInvoicePending").val()+'&type=INVOICE_PENDING',
-			    dataType: 'json',
-			    success: function(data){
-					$("#isiToastSuccess").html('Berhasil mengambil data');
-					$("#successToast").toast('show');
-			      	console.log(data);
-			      	tableInvoicePending(data);
-			    }
-			})
+				$.ajax({
+				    type: 'POST',
+				    url: '<?php echo base_url()?>Shopee/getOrdersShopee',
+				    data: 'dateFrom='+$('#tanggalAwalProcessed').val()+'&dateTo='+$("#tanggalAkhirProcessed").val()+'&type=PROCESSED',
+				    dataType: 'json',
+				    success: function(data){
+				    	if (data.message != '' || data.message === undefined) {
+							$("#isiToastSuccess").html('Berhasil mengambil data');
+							$("#successToast").toast('show');
+						}else{
+							$("#isiToastGagal").html('Message: '+data.message.split(',')[1]+' <p>Jika error refresh_token harap login ulang akun online shop anda</p>');
+							$("#dangerToast").toast('show');
+				    	}
+				      	tableProcessed(data);
+				    }
+				})
 			}
 		});
 
-		$("#tInvoicePending").on("click", 'td.detailOrdersLazada', function() {
+		$("#tProcessed").on("click", 'td.detailOrdersLazada', function() {
 			console.log(table.row(this).data());
 			const data = table.row(this).data();
 			$.ajax({

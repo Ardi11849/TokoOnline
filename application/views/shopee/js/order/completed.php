@@ -1,18 +1,18 @@
 <script type="text/javascript">
 	$(document).ready( function () {
-		$('#tanggalAwalInCancel').datepicker({
+		$('#tanggalAwalCompleted').datepicker({
 			uiLibrary: 'bootstrap4',
 			format: 'dd-mm-yyyy'
 		});
-		$('#tanggalAkhirInCancel').datepicker({
+		$('#tanggalAkhirCompleted').datepicker({
 			uiLibrary: 'bootstrap4',
 			format: 'dd-mm-yyyy'
 		});
 		var table;
 		var numberRenderer = $.fn.dataTable.render.number( ',', '.', 0, 'Rp. '  ).display;
-		function tableInCancel(data) {
-			console.log(data);
-		    table = $('#tInCancel').DataTable({
+		function tableCompleted(data) {
+			$('#tCompleted').DataTable().destroy();
+		    table = $('#tCompleted').DataTable({
 				dom: 'Bfrtip',
 				buttons: ['excel', 'pdf', 'print',],
 				scrollX: true,
@@ -26,7 +26,7 @@
 					    } 
 					},
 					{ data: 'buyer_username' },
-					{ data: 'buyer_user_id' },
+					{ data: 'item_list.0.item_name' },
 					{ data: 'days_to_ship' },
 					{ data: 'estimated_shipping_fee' },
 					{ data: 'payment_method' },
@@ -70,33 +70,41 @@
 			});
 		};
 
-		$('#btn-searchInCancel').on('click', function() {
-			var dateToInt = parseInt($('#tanggalAkhirInCancel').val().split('-'));
-			var dateFromInt = parseInt($("#tanggalAwalInCancel").val().split('-'));
-			var dateRange = dateToInt - dateFromInt;
+		$('#btn-searchCompleted').on('click', function() {
+			var dateToInt = $('#tanggalAkhirCompleted').val().split('-');
+			var dateFromInt = $("#tanggalAwalCompleted").val().split('-');
+			const oneDay = 24 * 60 * 60 * 1000;
+			const fDate = new Date(dateToInt[2], dateToInt[1], dateToInt[0]);
+			const tDate = new Date(dateFromInt[2], dateFromInt[1], dateFromInt[0]);
+			const dateRange = Math.round(Math.abs((fDate - tDate) / oneDay));
+			console.log(dateRange);
 			if (dateRange > 15) {
 				$("#isiToastGagal").html('Range Tanggal tidak boleh melebihi 15 hari');
 				$("#dangerToast").toast('show');
-			} else if (dateToInt < dateFromInt) {
+			} else if (dateToInt[2]+dateToInt[1]+dateToInt[0] < dateFromInt[2]+dateFromInt[1]+dateFromInt[0]) {
 				$("#isiToastGagal").html('Tanggal akhir harus lebih besar dari tanggal awal');
 				$("#dangerToast").toast('show');
 			} else {
-			$.ajax({
-			    type: 'POST',
-			    url: '<?php echo base_url()?>Shopee/getOrdersShopee',
-			    data: 'dateFrom='+$('#tanggalAwalInCancel').val()+'&dateTo='+$("#tanggalAkhirInCancel").val()+'&type=IN_CANCEL',
-			    dataType: 'json',
-			    success: function(data){
-					$("#isiToastSuccess").html('Berhasil mengambil data');
-					$("#successToast").toast('show');
-			      	console.log(data);
-			      	tableInCancel(data);
-			    }
-			})
+				$.ajax({
+				    type: 'POST',
+				    url: '<?php echo base_url()?>Shopee/getOrdersShopee',
+				    data: 'dateFrom='+$('#tanggalAwalCompleted').val()+'&dateTo='+$("#tanggalAkhirCompleted").val()+'&type=COMPLETED',
+				    dataType: 'json',
+				    success: function(data){
+				    	if (data.message === '' || data.message === undefined) {
+							$("#isiToastSuccess").html('Berhasil mengambil data');
+							$("#successToast").toast('show');
+						}else{
+							$("#isiToastGagal").html('Message: '+data.message.split(',')[1]+' <p>Jika error refresh_token harap login ulang akun online shop anda</p>');
+							$("#dangerToast").toast('show');
+				    	}
+				      	tableCompleted(data);
+				    }
+				})
 			}
 		});
 
-		$("#tInCancel").on("click", 'td.detailOrdersLazada', function() {
+		$("#tCompleted").on("click", 'td.detailOrdersLazada', function() {
 			console.log(table.row(this).data());
 			const data = table.row(this).data();
 			$.ajax({

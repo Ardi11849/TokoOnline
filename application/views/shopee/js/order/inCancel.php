@@ -1,18 +1,18 @@
 <script type="text/javascript">
 	$(document).ready( function () {
-		$('#tanggalAwalReadyToShip').datepicker({
+		$('#tanggalAwalInCancel').datepicker({
 			uiLibrary: 'bootstrap4',
 			format: 'dd-mm-yyyy'
 		});
-		$('#tanggalAkhirReadyToShip').datepicker({
+		$('#tanggalAkhirInCancel').datepicker({
 			uiLibrary: 'bootstrap4',
 			format: 'dd-mm-yyyy'
 		});
 		var table;
 		var numberRenderer = $.fn.dataTable.render.number( ',', '.', 0, 'Rp. '  ).display;
-		function tableReadyToShip(data) {
-			console.log(data);
-		    table = $('#tReadyToShip').DataTable({
+		function tableInCancel(data) {
+			$('#tInCancel').DataTable().destroy();
+		    table = $('#tInCancel').DataTable({
 				dom: 'Bfrtip',
 				buttons: ['excel', 'pdf', 'print',],
 				scrollX: true,
@@ -70,33 +70,41 @@
 			});
 		};
 
-		$('#btn-searchReadyToShip').on('click', function() {
-			var dateToInt = parseInt($('#tanggalAkhirReadyToShip').val().split('-'));
-			var dateFromInt = parseInt($("#tanggalAwalReadyToShip").val().split('-'));
-			var dateRange = dateToInt - dateFromInt;
+		$('#btn-searchInCancel').on('click', function() {
+			var dateToInt = $('#tanggalAkhirInCancel').val().split('-');
+			var dateFromInt = $("#tanggalAwalInCancel").val().split('-');
+			const oneDay = 24 * 60 * 60 * 1000;
+			const fDate = new Date(dateToInt[2], dateToInt[1], dateToInt[0]);
+			const tDate = new Date(dateFromInt[2], dateFromInt[1], dateFromInt[0]);
+			const dateRange = Math.round(Math.abs((fDate - tDate) / oneDay));
+			console.log(dateRange);
 			if (dateRange > 15) {
 				$("#isiToastGagal").html('Range Tanggal tidak boleh melebihi 15 hari');
 				$("#dangerToast").toast('show');
-			} else if (dateToInt < dateFromInt) {
+			} else if (dateToInt[2]+dateToInt[1]+dateToInt[0] < dateFromInt[2]+dateFromInt[1]+dateFromInt[0]) {
 				$("#isiToastGagal").html('Tanggal akhir harus lebih besar dari tanggal awal');
 				$("#dangerToast").toast('show');
 			} else {
-			$.ajax({
-			    type: 'POST',
-			    url: '<?php echo base_url()?>Shopee/getOrdersShopee',
-			    data: 'dateFrom='+$('#tanggalAwalReadyToShip').val()+'&dateTo='+$("#tanggalAkhirReadyToShip").val()+'&type=READY_TO_SHIP',
-			    dataType: 'json',
-			    success: function(data){
-					$("#isiToastSuccess").html('Berhasil mengambil data');
-					$("#successToast").toast('show');
-			      	console.log(data);
-			      	tableReadyToShip(data);
-			    }
-			})
+				$.ajax({
+				    type: 'POST',
+				    url: '<?php echo base_url()?>Shopee/getOrdersShopee',
+				    data: 'dateFrom='+$('#tanggalAwalInCancel').val()+'&dateTo='+$("#tanggalAkhirInCancel").val()+'&type=IN_CANCEL',
+				    dataType: 'json',
+				    success: function(data){
+				    	if (data.message != '' || data.message === undefined) {
+							$("#isiToastSuccess").html('Berhasil mengambil data');
+							$("#successToast").toast('show');
+						}else{
+							$("#isiToastGagal").html('Message: '+data.message.split(',')[1]+' <p>Jika error refresh_token harap login ulang akun online shop anda</p>');
+							$("#dangerToast").toast('show');
+				    	}
+				      	tableInCancel(data);
+				    }
+				})
 			}
 		});
 
-		$("#tReadyToShip").on("click", 'td.detailOrdersLazada', function() {
+		$("#tInCancel").on("click", 'td.detailOrdersLazada', function() {
 			console.log(table.row(this).data());
 			const data = table.row(this).data();
 			$.ajax({

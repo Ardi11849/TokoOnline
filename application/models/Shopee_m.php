@@ -9,6 +9,14 @@ class Shopee_m extends CI_Model {
 	var $partnerId = 2002850;
 	var $partnerKey = 'ea405b9b70ba25b1ac4f2accee38b9ac445235c18c1a7de7eec5343e9389b938';
 
+	public function getShopFromDB()
+	{
+		$this->db->select('id_user_shopee, id_user, id_seller, nama_shop, akses_token, expired_token, refresh_token');
+		$this->db->where('id_user', $this->session->userdata('id'));
+		$data = $this->db->get('tbl_user_shopee')->result_array();
+		return $data;
+	}
+
 	public function loginShopeeV2()
 	{
 		$path = '/api/v2/shop/auth_partner';
@@ -54,15 +62,41 @@ class Shopee_m extends CI_Model {
 		]);
 		$body = $response->getBody();
 		$body_array = json_decode($body, true);
-		print_r($body_array);
-		print_r($body_array['access_token']);
-		print_r($body_array['expire_in']);
-		print_r($body_array['refresh_token']);
 		$this->session->set_userdata('shopIdShopee', intval($data));
 		$this->session->set_userdata('accessTokenShopee', $body_array['access_token']);
 		$this->session->set_userdata('expiresTokenShopee', $body_array['expire_in']);
 		$this->session->set_userdata('refreshTokenShopee', $body_array['refresh_token']);
 		return $body_array;
+	}
+
+	public function refreshToken()
+	{
+		try {
+			$path = '/api/v2/auth/access_token/get';
+			$date = new DateTime();
+			$string = sprintf("%s%s%s", $this->partnerId, $path, $date->getTimestamp());
+			$encrypt = hash_hmac('sha256', $string, $this->partnerKey);
+			$client = new Client([
+			    'base_uri' => $this->url,
+			    // default timeout 5 detik
+			    'timeout'  => 5,
+			]);
+			 
+			$response = $client->request('POST', $path.'?sign='.$encrypt.'&partner_id='.$this->partnerId.'&timestamp='.$date->getTimestamp(), [
+			    'json' => [
+			        'refresh_token' => (string)$this->session->userdata('refreshTokenShopee'),
+			        'partner_id' => $this->partnerId,
+			        'shop_id' => $this->session->userdata('shopIdShopee')
+			    ]
+			]);
+			$body = $response->getBody();
+			$body_array = json_decode($body, true);
+			var_dump($body_array);
+		} catch (GuzzleHttp\Exception\ClientException $e) {
+		    $response = $e->getResponse();
+		    $error = $response->getBody();
+			return $error;
+		}
 	}
 
 	public function getShopInfoV2()
@@ -135,8 +169,9 @@ class Shopee_m extends CI_Model {
 		// return $body_array;
 	}
 
-	public function getOrdersShopeeUnpaidV2($data)
+	public function getOrdersShopeeV2($data)
 	{
+		// var_dump($data['start']);
 		$path = '/api/v2/order/get_order_list';
 		$token = $this->session->userdata('accessTokenShopee');
 		$shopId = $this->session->userdata('shopIdShopee');
@@ -146,40 +181,91 @@ class Shopee_m extends CI_Model {
 		$type = $data['type'];
 		$string = sprintf("%s%s%s%s%s", $this->partnerId, $path, $date->getTimestamp(), $token, $shopId);
 		$encrypt = hash_hmac('sha256', $string, $this->partnerKey);
-		// var_dump('partnerId='.$this->partnerId.',timestamp='.$date->getTimestamp().',access_token='.$token.',shopid='.$shopId.',sign='.$encrypt.',time_range_field=created_time,time_from='.strtotime($dateFrom).',time_to='.strtotime($dateTo).',type='.$type);die();
-		$client = new Client([
-		    'base_uri' => $this->url,
-		    // default timeout 5 detik
-		    'timeout'  => 5,
-		]);
-		 
-		$response = $client->request('GET', $path, [
-		    'query' => [
-		        'shop_id' => $shopId,
-		        'access_token' => $token,
-		        'partner_id' => $this->partnerId,
-		        'timestamp' => $date->getTimestamp(),
-		        'sign' => $encrypt,
-		        'time_range_field' => 'create_time',
-		        'time_from' => strtotime($dateFrom),
-		        'time_to' => strtotime($dateTo),
-		        'page_size' => 20,
-		        'order_status' => $type
-		    ]
-		]);
-		$body = $response->getBody();
-		$body_json = $body->getContents();
-		$body_array = json_decode($body, true);
-		if ($body_array['error'] != '') return $body_array;
 		try {
-			$noSn = null;
-			foreach ($body_array['response']['order_list'] as $key) {
-				$noSn .= $key['order_sn'].',';
+			$client = new Client([
+			    'base_uri' => $this->url,
+			    // default timeout 5 detik
+			    'timeout'  => 5,
+			]);
+			 
+			$response = $client->request('GET', $path, [
+			    'query' => [
+			        'shop_id' => $shopId,
+			        'access_token' => $token,
+			        'partner_id' => $this->partnerId,
+			        'timestamp' => $date->getTimestamp(),
+			        'sign' => $encrypt,
+			        'time_range_field' => 'create_time',
+			        'time_from' => strtotime($dateFrom),
+			        'time_to' => strtotime($dateTo),
+			        // 'page_size' => 50,
+			        'page_size' => $data['length'],
+			        'cursor' => $data['start'],
+			        'order_status' => $type
+			    ]
+			]);
+			$body = $response->getBody();
+			$body_json = $body->getContents();
+			$body_array = json_decode($body, true);
+			if ($body_array['error'] != '') return $body_array;
+			try {
+				$noSn = null;
+				foreach ($body_array['response']['order_list'] as $key) {
+					$noSn .= $key['order_sn'].',';
+				}
+				$data = $this->getDetailsOrderShopeeV2($noSn);
+				return $data;
+			} catch (Exception $e) {
+				return $e;
 			}
-			$data = $this->getDetailsOrderShopeeV2($noSn);
-			return $data;
-		} catch (Exception $e) {
-			return $e;
+		} catch (GuzzleHttp\Exception\ClientException $e) {
+		    $response = $e->getResponse();
+		    $error = $response->getBody();
+		    return $this->refreshToken();
+		}
+	}
+
+	public function getReturnShopeeV2($data)
+	{
+		// var_dump($data['start']);
+		$path = '/api/v2/returns/get_return_list';
+		$token = $this->session->userdata('accessTokenShopee');
+		$shopId = $this->session->userdata('shopIdShopee');
+		$date = new DateTime();
+		$dateFrom = $data['dateFrom'];
+		$dateTo = $data['dateTo'];
+		$string = sprintf("%s%s%s%s%s", $this->partnerId, $path, $date->getTimestamp(), $token, $shopId);
+		$encrypt = hash_hmac('sha256', $string, $this->partnerKey);
+		try {
+			$client = new Client([
+			    'base_uri' => $this->url,
+			    // default timeout 5 detik
+			    'timeout'  => 5,
+			]);
+			 
+			$response = $client->request('GET', $path, [
+			    'query' => [
+			        'shop_id' => $shopId,
+			        'access_token' => $token,
+			        'partner_id' => $this->partnerId,
+			        'timestamp' => $date->getTimestamp(),
+			        'sign' => $encrypt,
+			        'time_from' => strtotime($dateFrom),
+			        'time_to' => strtotime($dateTo),
+			        // 'page_size' => 50,
+			        'page_size' => $data['length'],
+			        'cursor' => $data['start']
+			    ]
+			]);
+			$body = $response->getBody();
+			$body_json = $body->getContents();
+			$body_array = json_decode($body, true);
+			if ($body_array['error'] != '') return $body_array;
+			return['response_data']['response'];
+		} catch (GuzzleHttp\Exception\ClientException $e) {
+		    $response = $e->getResponse();
+		    $error = $response->getBody();
+		    return $this->refreshToken();
 		}
 	}
 
