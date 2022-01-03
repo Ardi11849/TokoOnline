@@ -69,7 +69,7 @@ class Shopee_m extends CI_Model {
 		return $body_array;
 	}
 
-	public function refreshToken()
+	public function refreshToken($func, $data)
 	{
 		try {
 			$path = '/api/v2/auth/access_token/get';
@@ -92,6 +92,12 @@ class Shopee_m extends CI_Model {
 			$body = $response->getBody();
 			$body_array = json_decode($body, true);
 			var_dump($body_array);
+			$this->session->set_userdata('shopIdShopee', $body_array['shop_id']);
+			$this->session->set_userdata('accessTokenShopee', $body_array['access_token']);
+			$this->session->set_userdata('expiresTokenShopee', $body_array['expire_in']);
+			$this->session->set_userdata('refreshTokenShopee', $body_array['refresh_token']);
+			$this->getShopInfoV2();
+			$this->$func($data);
 		} catch (GuzzleHttp\Exception\ClientException $e) {
 		    $response = $e->getResponse();
 		    $error = $response->getBody();
@@ -127,6 +133,13 @@ class Shopee_m extends CI_Model {
 		$this->session->set_userdata('waktuMasukShopee', $body_array['auth_time']);
 		$this->session->set_userdata('expiresAccountShopee', $body_array['expire_time']);
 		// var_dump($this->session->userdata());die();
+		// var_dump($insert);die();
+		$this->saveUser();
+		return $body_array;
+	}
+
+	private function saveUser()
+	{
 		$insert = $this->db->query("replace into tbl_user_shopee
 			(id_user_shopee, id_user, id_seller, nama_shop, akses_token, expired_token, refresh_token, created_by, created_on)
 			values (
@@ -140,8 +153,6 @@ class Shopee_m extends CI_Model {
 			'".$this->session->userdata('id')."',
 			'".date('d-m-Y')."'
 		)");
-		// var_dump($insert);die();
-		return $body_array;
 	}
 
 	public function getShopInfoV1()
@@ -171,7 +182,7 @@ class Shopee_m extends CI_Model {
 
 	public function getOrdersShopeeV2($data)
 	{
-		// var_dump($data['start']);
+		// var_dump($data['type']);die();
 		$path = '/api/v2/order/get_order_list';
 		$token = $this->session->userdata('accessTokenShopee');
 		$shopId = $this->session->userdata('shopIdShopee');
@@ -219,6 +230,7 @@ class Shopee_m extends CI_Model {
 			$body_json = $body->getContents();
 			$body_array = json_decode($body, true);
 			if ($body_array['error'] != '') return $body_array;
+			// var_dump($body_array['response']);die();
 			try {
 				$noSn = null;
 				foreach ($body_array['response']['order_list'] as $key) {
@@ -227,12 +239,12 @@ class Shopee_m extends CI_Model {
 				$data = $this->getDetailsOrderShopeeV2($noSn);
 				return $data;
 			} catch (Exception $e) {
-				return $e;
-			}
+				// return $e;
+		}
 		} catch (GuzzleHttp\Exception\ClientException $e) {
 		    $response = $e->getResponse();
 		    $error = $response->getBody();
-		    return $this->refreshToken();
+		    return $this->refreshToken('getOrdersShopeeV2', $data);
 		}
 	}
 
@@ -276,7 +288,7 @@ class Shopee_m extends CI_Model {
 		} catch (GuzzleHttp\Exception\ClientException $e) {
 		    $response = $e->getResponse();
 		    $error = $response->getBody();
-		    return $this->refreshToken();
+		    return $this->refreshToken('getReturnShopeeV2', $data);
 		}
 	}
 
@@ -330,7 +342,8 @@ class Shopee_m extends CI_Model {
 		        'sign' => $encrypt,
 		    	'order_sn_list' => $data,
 		    	'response_optional_fields' => 'buyer_user_id,buyer_username,estimated_shipping_fee,recipient_address,actual_shipping_fee ,goods_to_declare,note,note_update_time,item_list,pay_time,dropshipper,dropshipper_phone,split_up,buyer_cancel_reason,cancel_by,cancel_reason,actual_shipping_fee_confirmed,buyer_cpf_id,fulfillment_flag,pickup_done_time,package_list,shipping_carrier,payment_method,total_amount,buyer_username,invoice_data, checkout_shipping_carrier,reverse_shipping_fee'
-		    ]
+		    ],
+		    'timeout' => 60
 		]);
 		$body = $response->getBody();
 		$body_array = json_decode($body, true);

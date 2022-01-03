@@ -7,17 +7,18 @@ class Lazada extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->model('Lazada_m');
-		if (!$this->session->userdata('id')) redirect(base_url(),'refresh');
+		// if (!$this->session->userdata('id')) redirect(base_url(),'refresh');
 	}
 
 	public function index()
 	{
+		// var_dump(date(DATE_ISO8601, strtotime('2022-01-01')));die();
 		$this->load->view('lazada/start');
 	}
 
 	public function loginLazada()
 	{
-		redirect('https://auth.lazada.com/oauth/authorize?response_type=code&force_auth=true&redirect_uri=https://phpclusters-61918-0.cloudclusters.net/Lazada/getTokenLazada/&client_id=105624','refresh');
+		redirect('https://auth.lazada.com/oauth/authorize?response_type=code&force_auth=true&redirect_uri='.base_url().'Lazada/getTokenLazada/&client_id=105624','refresh');
 	}
 
 	public function getTokenLazada()
