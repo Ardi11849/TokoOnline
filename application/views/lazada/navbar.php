@@ -2,11 +2,11 @@
       <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
   		<h6>Akun: 
-  			<select class="form-control" style="width: 300px;" id="selectAkunShopee">
+  			<select class="form-control" style="width: 300px;" id="selectAkunLazada">
       			<option value="">Pilih akun lazada</option>
-      			<!-- <?php foreach ($akun as $data) { ?>
+      			<?php foreach ($akun as $data) { ?>
       				<option data-id="<?php echo $data['id_seller']?>" data-namaShop="<?php echo $data['nama_shop']?>" data-token="<?php echo $data['akses_token']?>" data-expired="<?php echo $data['expired_token']?>" data-refreshToken="<?php echo $data['refresh_token']?>" value="<?php echo $data['id_seller']?>"><?php echo $data['nama_shop']?></option>
-      			<?php } ?> -->
+      			<?php } ?>
       		</select>
       	</h6>
         </nav>

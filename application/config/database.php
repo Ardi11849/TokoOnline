@@ -75,8 +75,10 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
+	// 'hostname' => 'mariadb-64978-0.cloudclusters.net:10005',
 	'hostname' => 'localhost',
 	'username' => 'root',
+	// 'password' => '#P@ssw0rd!',
 	'password' => '',
 	'database' => 'olshop',
 	'dbdriver' => 'mysqli',

@@ -15,7 +15,7 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://js.pusher.com/beams/1.0/push-notifications-cdn.js"></script>
 <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
-  <script type="text/javascript">
+  <!-- <script type="text/javascript">
     $.fn.dataTable.ext.errMode = 'none';
      const beamsClient = new PusherPushNotifications.Client({
       instanceId: '12b60059-f1a5-4f32-9cd8-eac3defaaa55',
@@ -29,30 +29,61 @@
     // Enable pusher logging - don't include this in production
     Pusher.logToConsole = true;
 
-    var pusher = new Pusher('bb43daf7ba6cf7a53184', {
+     var pusher = new Pusher('b334013a027b1e65077f', {
       cluster: 'ap1'
     });
 
     var channel = pusher.subscribe('webhook');
     channel.bind('my-event', function(data) {
-      $("#isiToastInfo").html(data.type+': '+data.message);
+      console.log(data);
+      console.log(JSON.parse(data));
+      var parse = JSON.parse(data);
+      var jsonData = JSON.parse(parse.data);
+      console.log(jsonData);
+      var date = new Date(jsonData.timestamp * 1000);
+      // Hours part from the timestamp
+      var hours = date.getHours();
+      // Minutes part from the timestamp
+      var minutes = "0" + date.getMinutes();
+      // Seconds part from the timestamp
+      var seconds = "0" + date.getSeconds();
+
+      // Will display time in 10:30:23 format
+      var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+      if (parse.platform === 'Lazada') {
+        console.log(jsonData.message_type);
+        if (jsonData.message_type === 0) {
+          var title = 'update barang';
+          var body = jsonData.data.buyer_id+' '+jsonData.data.order_status;
+        }
+        if (jsonData.message_type === 2) {
+          var title = 'new message';
+          var body = jsonData.data.session_id;
+        }
+        if (jsonData.message_type === 19) {
+          var title = jsonData.data.unread_count+' new message';
+          var body = jsonData.data.session_id;
+        }
+      }else if (parse.platform === 'Shopee') {
+        console.log(jsonData.data);
+        var title = jsonData.data.ordersn;
+        var body = jsonData.data.status;
+      }
+      $("#isiToastInfo").html(parse.platform+': '+title+' '+body);
       $("#infoToast").toast('show');
-      // alert(JSON.stringify(data));
-      var toDate = new Date(data.timestamp * 1000).toISOString()
-      var getDate = toDate.substr(0, 10)+' '+toDate.substr(11, 8);
       $("#isiNotification").append('<li class="mb-2 nf">'+
                   '<a class="dropdown-item border-radius-md" href="javascript:;">'+
                     '<div class="d-flex py-1">'+
                       '<div class="my-auto">'+
-                        '<img src="'+data.image+'" class="avatar avatar-sm  me-3 ">'+
+                        '<img src="'+parse.image+'" class="avatar avatar-sm  me-3 ">'+
                       '</div>'+
                       '<div class="d-flex flex-column justify-content-center">'+
                         '<h6 class="text-sm font-weight-normal mb-1">'+
-                          '<span class="font-weight-bold">'+data.type+'</span> '+data.message+
-                        '</h6>'+
+                          '<span class="font-weight-bold">'+title+'</span> <p>'+body+
+                        '</p></h6>'+
                         '<p class="text-xs text-secondary mb-0">'+
                           '<i class="fa fa-clock me-1" aria-hidden="true"></i>'+
-                          getDate+
+                          formattedTime+
                         '</p>'+
                       '</div>'+
                     '</div>'+
@@ -60,18 +91,4 @@
                 '</li>');
       $('#countNotification').html($('.nf').length);
     });
-    $('select').select2();
-    $('#selectAkunShopee').val('<?php echo $this->session->userdata('shopIdShopee');?>');
-    $('#selectAkunShopee').trigger('change');
-    $('#selectAkunShopee').on('change', function() {
-      $.ajax({
-        type: 'post',
-        url: '<?php echo base_url()?>Shopee/setSession',
-        data: $(this).find(':selected').data(),
-        dataType: 'json',
-        success: function(data){
-          console.log(data);
-        }
-      })
-    })
-  </script>
+  </script> -->

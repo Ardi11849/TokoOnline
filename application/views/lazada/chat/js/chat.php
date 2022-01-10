@@ -1,19 +1,4 @@
-<script type="application/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script type="text/javascript">
-    $('select').select2();
-    $('#selectAkunLazada').val('<?php echo $this->session->userdata('shopIdLazada');?>');
-    $('#selectAkunLazada').trigger('change');
-    $('#selectAkunLazada').on('change', function() {
-      $.ajax({
-        type: 'post',
-        url: '<?php echo base_url()?>Lazada/setSession',
-        data: $(this).find(':selected').data(),
-        dataType: 'json',
-        success: function(data){
-          console.log(data);
-        }
-      })
-    });
     $("a.lazada").addClass('active bg-gradient-primary');
     $("a.dashboard").removeClass('active bg-gradient-primary');
     $("a.Lazada").removeClass('active bg-gradient-primary');
@@ -27,7 +12,7 @@
 		aktifKlik();
 	};
 
-	setInterval(function(){getChat();}, 1000 * 20);
+	// setInterval(function(){getChat();}, 1000 * 20);
 
 	getChat();
 	function getChat() {

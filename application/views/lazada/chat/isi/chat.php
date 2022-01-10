@@ -36,7 +36,9 @@
 												</div>
 											</div>
 
-											<div class="flex-grow-0 py-3 px-4 border-top">
+											<?php $this->load->view('lazada/chat/isi/navsTab');?>
+
+											<!-- <div class="flex-grow-0 py-3 px-4 border-top">
 											    <ul class="nav nav-tabs" id="myTab" role="tablist">
 											        <li class="nav-item">
 											            <a class="nav-link active" id="text-tab" data-toggle="tab" href="#text1" role="tab" aria-controls="text" aria-selected="true">Text</a>
@@ -63,7 +65,7 @@
 											        </div>
 											        <div class="tab-pane fade" id="order1" role="tabpanel" aria-labelledby="order-tab"></div>
 											    </div>
-											</div>
+											</div> -->
 
 										</div>
 									</div>

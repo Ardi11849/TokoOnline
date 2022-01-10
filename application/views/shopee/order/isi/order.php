@@ -5,7 +5,7 @@
 	          		<div class="card my-4">
 	            		<div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
 			              	<div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-			                	<h6 class="text-white text-capitalize ps-3">Tabel Orderan</h6>
+			                	<h6 class="text-white text-capitalize ps-3">Tabel Pembeli</h6>
 			              	</div>
 	            		</div>
 	            		<div class="card-body pb-2">
@@ -23,14 +23,14 @@
 								    	<label>Type</label>
 								    	<select class="form-control" id="type">
 								    		<option value="">Pilih Type</option>
-								    		<option value="UNPAID">Unpaid</option>
-								    		<option value="INVOICE_PANDING">Invoice Panding</option>
-								    		<option value="READY_TO_SHIP">Ready To Ship</option>
-								    		<option value="SHIPPED">Shipped</option>
-								    		<option value="PROCESSED">Processed</option>
-								    		<option value="COMPLETED">Completed</option>
-								    		<option value="IN_CANCEL">In Cancel</option>
-								    		<option value="CANCELLED">Cancelled</option>
+								    		<option value="UNPAID">Belum Di Bayar</option>
+								    		<option value="INVOICE_PANDING">Menunggu Konfirm Pembeli</option>
+								    		<option value="READY_TO_SHIP">Siap Di Kirim</option>
+								    		<option value="SHIPPED">Dikirim</option>
+								    		<option value="PROCESSED">Proses</option>
+								    		<option value="COMPLETED">Selesai</option>
+								    		<option value="IN_CANCEL">Menunggu Respon Pembatalan Seller</option>
+								    		<option value="CANCELLED">Batal</option>
 								    	</select>
 								    </div>
 							  	</div>
@@ -44,22 +44,18 @@
 				                    <tr>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">No</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tanggal Pembuatan</th>
+				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">No Pembeli</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Username Pembeli</th>
-				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama Item</th>
-				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Hari Untuk Di Kirim</th>
-				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Perkiraan Biaya Pengiriman</th>
-				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Metode Pembayaran</th>
-				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Operator Pengirim</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Harga Total</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
-				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Action</th>
+				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Alasan</th>
 				                    </tr>
 				                  </thead>
 				                  <tbody>
 				                  </tbody>
 							        <tfoot>
 							            <tr>
-							                <th colspan="3"></th>
+							                <th colspan="6"></th>
 							            </tr>
 							        </tfoot>
 				                </table>
@@ -69,4 +65,5 @@
 	        	</div>
 	      	</div>
 	    </div>
+	    <?php $this->load->view('shopee/order/isi/detailOrder');?>
 	    <?php $this->load->view('shopee/order/js/order');?>

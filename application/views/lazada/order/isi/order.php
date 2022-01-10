@@ -23,20 +23,27 @@
 								    	<label>Type</label>
 								    	<select class="form-control" id="type">
 								    		<option value="">Pilih Type</option>
-								    		<option value="UNPAID">Unpaid</option>
-								    		<option value="INVOICE_PANDING">Invoice Panding</option>
-								    		<option value="READY_TO_SHIP">Ready To Ship</option>
-								    		<option value="SHIPPED">Shipped</option>
-								    		<option value="PROCESSED">Processed</option>
-								    		<option value="COMPLETED">Completed</option>
-								    		<option value="IN_CANCEL">In Cancel</option>
-								    		<option value="CANCELLED">Cancelled</option>
+								    		<option value="all">Semua</option>
+								    		<option value="unpaid">Unpaid</option>
+								    		<option value="pending">Pending</option>
+								    		<option value="ready_to_ship">Ready To Ship</option>
+								    		<option value="shipped">Shipped</option>
+								    		<option value="delivered">Delivered</option>
+								    		<option value="returned">Returned</option>
+								    		<option value="failed">Failed</option>
+								    		<option value="canceled">Cancelled</option>
 								    	</select>
 								    </div>
+							  	</div>
+							  	<div class="row" style="padding-top: 10px;">
+							  		<div class="col">
+							  			<button class="btn btn-danger" id="btn-searchOrder"><i class="fa fa-search"></i> Cari</button>
+							  		</div>
 							  	</div>
 				                <table class="table align-items-center mb-0 table-striped" id="tOrderLazada">
 				                  <thead>
 				                    <tr>
+				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">No</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tanggal Pembuatan</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama Customer</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Total Item</th>
@@ -53,7 +60,7 @@
 				                  </tbody>
 							        <tfoot>
 							            <tr>
-							                <th colspan="0" style="text-align:left">Total Page Ini:</th>
+							                <th colspan="1" style="text-align:left">Total Page Ini:</th>
 							                <th></th>
 							            </tr>
 							        </tfoot>

@@ -1,28 +1,49 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
 require_once FCPATH.'vendor/autoload.php';
 use GuzzleHttp\Client;
 
 class Webhook extends CI_Controller {
 
-	public function index()
+	public function Shopee()
 	{
 		header("HTTP/1.1 200 OK");
-		
-	  	$data = [];
-		if($json = json_decode(file_get_contents("php://input"), true)) {
-		    $data['json'] = $json;
-		} else {
-		    $data['POST'] = $_POST;
-		}
-		try {
-			$this->pusher($data);		
-		} catch (Exception $e) {
-			echo $e;
+
+		echo $data = file_get_contents('php://input');
+		if (isset($data)) {
+			$this->sendNotif('Shopee', 'https://www.pngmart.com/files/12/Shopee-Logo-Transparent-Background.png', $data, 60);
 		}
 	}
 
-	private function pusher($data){
+	public function Lazada()
+	{
+		header("HTTP/1.1 200 OK");
+
+		echo $data = file_get_contents('php://input');
+		if (isset($data)) {
+			$this->sendNotif('Lazada', 'https://i.pinimg.com/originals/32/94/98/329498a465defb414b7860fc4e86310c.jpg', $data, 0.7);
+		}
+	}
+
+	public function sendNotif($platform, $image, $data, $timeout)
+	{
+		$client = new Client([
+		    'timeout'  => $timeout,
+		]);
+		 
+		$response = $client->request('POST', 'https://12b60059-f1a5-4f32-9cd8-eac3defaaa55.pushnotifications.pusher.com/publish_api/v1/instances/12b60059-f1a5-4f32-9cd8-eac3defaaa55/publishes', [
+			'headers' => [
+			    'Authorization' => 'Bearer D730045068179B5B3E5D4514C8C3DDAEA591BEA93BA6B8A30730DCF6BA5F421D'
+			    ],
+			'json' => [
+				"interests" => ['hello'],
+				"web" => ["notification" => ['title' => $platform, 'icon'=> $image, 'body' => $data]],
+				"data" => $data
+			]
+		]);
+	}
+
+	public function SetPusher()
+	{
 		$options = array(
 	    	'cluster' => 'ap1',
 	    	'forceTLS' => true
@@ -33,13 +54,15 @@ class Webhook extends CI_Controller {
 	    	'1317506',
 	    	$options
 	  	);
+	  	$decode = json_decode(file_get_contents('php://input'));
+	  	var_dump($decode);
+	  	$result = [];
+	  	$result['platform'] = $decode->platform;
+	  	$result['image'] = $decode->image;
+	  	$result['data'] = $decode->data;
 
 	  	$date = new DateTime();
-	  	if ($data['site'] == 'lazada_vn') $data['image'] = 'https://id-test-11.slatic.net/p/4a228af142e2ac36658fccb1961a2bb8.png';
-	  	// if ($data['site'] == 'shopee_vn') 
-	  		$data['image'] = 'https://i.pinimg.com/originals/6d/b9/31/6db931827443a7455a4b805fe5829820.png';
-	  	$pusher->trigger('webhook', 'my-event', $data);
-	  	return http_response_code(200);
+	  	$pusher->trigger('webhook', 'my-event', json_encode($result));
 	}
 
 }

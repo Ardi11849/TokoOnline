@@ -91,13 +91,12 @@ class Shopee_m extends CI_Model {
 			]);
 			$body = $response->getBody();
 			$body_array = json_decode($body, true);
-			var_dump($body_array);
 			$this->session->set_userdata('shopIdShopee', $body_array['shop_id']);
 			$this->session->set_userdata('accessTokenShopee', $body_array['access_token']);
 			$this->session->set_userdata('expiresTokenShopee', $body_array['expire_in']);
 			$this->session->set_userdata('refreshTokenShopee', $body_array['refresh_token']);
 			$this->getShopInfoV2();
-			$this->$func($data);
+			return $this->$func($data);
 		} catch (GuzzleHttp\Exception\ClientException $e) {
 		    $response = $e->getResponse();
 		    $error = $response->getBody();
@@ -123,7 +122,6 @@ class Shopee_m extends CI_Model {
 		$response = $client->request('GET', $path.'?sign='.$encrypt.'&partner_id='.$this->partnerId.'&timestamp='.$date->getTimestamp().'&shop_id='.$shopId.'&access_token='.$token);
 		$body = $response->getBody();
 		$body_array = json_decode($body, true);
-		print_r($body_array);
 		$this->session->set_userdata('accountShopee', $body_array['shop_name']);
 		$this->session->set_userdata('statusAccountShopee', $body_array['status']);
 		$this->session->set_userdata('waktuMasukShopee', $body_array['auth_time']);
@@ -132,10 +130,7 @@ class Shopee_m extends CI_Model {
 		$this->session->set_userdata('statusAccountShopee', $body_array['status']);
 		$this->session->set_userdata('waktuMasukShopee', $body_array['auth_time']);
 		$this->session->set_userdata('expiresAccountShopee', $body_array['expire_time']);
-		// var_dump($this->session->userdata());die();
-		// var_dump($insert);die();
 		$this->saveUser();
-		return $body_array;
 	}
 
 	private function saveUser()
@@ -155,29 +150,55 @@ class Shopee_m extends CI_Model {
 		)");
 	}
 
-	public function getShopInfoV1()
+	public function getSaldoShopeeV2($data)
 	{
-		$path = '/api/v1/shop/get';
-		$shopId = intval($this->session->userdata('shopIdShopee'));
-		// echo $this->partnerId; die();
+		$path = '/api/v2/payment/get_wallet_transaction_list';
+		$token = $this->session->userdata('accessTokenShopee');
+		$shopId = $this->session->userdata('shopIdShopee');
 		$date = new DateTime();
-		$client = new Client([
-		    'base_uri' => $this->url,
-		    // default timeout 5 detik
-		    'timeout'  => 5,
-		]);
-		 
-		$response = $client->request('POST', $path, [
-		    'form_params' => [
-		        'partner_id' => $this->partnerId,
-		        'shopid' => $shopId,
-		        'timestamp' => $date->getTimestamp()
-		    ]
-		]);
-		$body = $response->getBody();
-		$body_array = json_decode($body, true);
-		print_r($body_array);
-		// return $body_array;
+		$dateFrom = $data['dateFrom']."00:00:00";
+		$dateTo = $data['dateTo']."23:59:59";
+		$length = $data['length'];
+		$cursor = $data['start'];
+		$string = sprintf("%s%s%s%s%s", $this->partnerId, $path, $date->getTimestamp(), $token, $shopId);
+		$encrypt = hash_hmac('sha256', $string, $this->partnerKey);
+		try {
+			$client = new Client([
+			    'base_uri' => $this->url,
+			    // default timeout 5 detik
+			    'timeout'  => 60,
+			]);
+			 
+			$response = $client->request('GET', $path, [
+			    'query' => [
+			        'shop_id' => $shopId,
+			        'access_token' => $token,
+			        'partner_id' => $this->partnerId,
+			        'timestamp' => $date->getTimestamp(),
+			        'sign' => $encrypt,
+			        'create_time_from' => strtotime($dateFrom),
+			        'create_time_to' => strtotime($dateTo),
+			        'page_size' => $length,
+			        'page_no' => $cursor
+			    ]
+			]);
+			$body = $response->getBody();
+			$body_json = $body->getContents();
+			$body_array = json_decode($body, true);
+			$result = [];
+			if (empty($body_array['response']['transaction_list'])) {
+				$result['data'] = [];
+			} else {
+				$result['data'] = $body_array['response']['transaction_list'];
+			}
+			$result['recordsTotal'] = count($body_array['response']['transaction_list']);
+			$result['draw'] = $data['draw'];
+			return $result;
+		} catch (GuzzleHttp\Exception\ClientException $e) {
+		    $response = $e->getResponse();
+		    $error = $response->getBody();
+		    return $this->refreshToken('getSaldoShopeeV2', $data);
+		}
 	}
 
 	public function getOrdersShopeeV2($data)
@@ -187,8 +208,8 @@ class Shopee_m extends CI_Model {
 		$token = $this->session->userdata('accessTokenShopee');
 		$shopId = $this->session->userdata('shopIdShopee');
 		$date = new DateTime();
-		$dateFrom = $data['dateFrom'];
-		$dateTo = $data['dateTo'];
+		$dateFrom = $data['dateFrom']."00:00:00";
+		$dateTo = $data['dateTo']."23:59:59";
 		$type = $data['type'];
 		if (isset($data['length'])) {
 			$length = $data['length'];
@@ -229,18 +250,24 @@ class Shopee_m extends CI_Model {
 			$body = $response->getBody();
 			$body_json = $body->getContents();
 			$body_array = json_decode($body, true);
-			if ($body_array['error'] != '') return $body_array;
-			// var_dump($body_array['response']);die();
 			try {
-				$noSn = null;
-				foreach ($body_array['response']['order_list'] as $key) {
-					$noSn .= $key['order_sn'].',';
+				$result= [];
+				$result['recordsTotal'] = count($body_array['response']['order_list']);
+				// $result['recordsFiltered'] = count($body_array['response']['order_list']);
+				$result['draw'] = $data['draw'];
+				if (empty($body_array['response']['order_list'])) {
+					$result['data'] = [];
+				} else {
+					$noSn = null;
+					foreach ($body_array['response']['order_list'] as $key) {
+						$noSn .= $key['order_sn'].',';
+					}
+					$result['data'] = $this->getDetailsOrderShopeeV2($noSn);
 				}
-				$data = $this->getDetailsOrderShopeeV2($noSn);
-				return $data;
+				return $result;
 			} catch (Exception $e) {
-				// return $e;
-		}
+				return $e;
+			}
 		} catch (GuzzleHttp\Exception\ClientException $e) {
 		    $response = $e->getResponse();
 		    $error = $response->getBody();
@@ -250,7 +277,7 @@ class Shopee_m extends CI_Model {
 
 	public function getReturnShopeeV2($data)
 	{
-		// var_dump($data['start']);
+		// var_dump($data);die();
 		$path = '/api/v2/returns/get_return_list';
 		$token = $this->session->userdata('accessTokenShopee');
 		$shopId = $this->session->userdata('shopIdShopee');
@@ -275,7 +302,6 @@ class Shopee_m extends CI_Model {
 			        'sign' => $encrypt,
 			        'time_from' => strtotime($dateFrom),
 			        'time_to' => strtotime($dateTo),
-			        // 'page_size' => 50,
 			        'page_size' => $data['length'],
 			        'page_no' => $data['start']
 			    ]
@@ -284,38 +310,29 @@ class Shopee_m extends CI_Model {
 			$body_json = $body->getContents();
 			$body_array = json_decode($body, true);
 			if ($body_array['error'] != '') return $body_array;
-			return['response_data']['response'];
+			try {
+				$result= [];
+				$result['recordsTotal'] = count($body_array['response']['return']);
+				// $result['recordsFiltered'] = count($body_array['response']['order_list']);
+				$result['draw'] = $data['draw'];
+				// if (empty($body_array['response']['order_list'])) {
+				$result['data'] = $body_array['response']['return'];
+				// } else {
+				// 	$noSn = null;
+				// 	foreach ($body_array['response']['order_list'] as $key) {
+				// 		$noSn .= $key['order_sn'].',';
+				// 	}
+				// 	$result['data'] = $this->getDetailsOrderShopeeV2($noSn);
+				// }
+				return $result;
+			} catch (Exception $e) {
+				return $e;
+			}
 		} catch (GuzzleHttp\Exception\ClientException $e) {
 		    $response = $e->getResponse();
 		    $error = $response->getBody();
 		    return $this->refreshToken('getReturnShopeeV2', $data);
 		}
-	}
-
-	public function getOrdersShopeeV1()
-	{
-		$path = '/api/v1/orders/get';
-		$shopId = intval($this->session->userdata('shopIdShopee'));
-		$partner_id = intval($this->partnerId);
-		// echo $this->partnerId; die();
-		$date = new DateTime();
-		$client = new Client([
-		    'base_uri' => $this->url,
-		    // default timeout 5 detik
-		    'timeout'  => 5,
-		]);
-		 
-		$response = $client->request('POST', $path, [
-		    'json' => [
-		    	'order_status' => 'ALL',
-		        'partner_id' => $partner_id,
-		        'shopid' => $shopId,
-		        'timestamp' => $date->getTimestamp()
-		    ]
-		]);
-		$body = $response->getBody();
-		$body_array = json_decode($body, true);
-		print_r($body_array);
 	}
 
 	public function getDetailsOrderShopeeV2($data)
@@ -353,9 +370,67 @@ class Shopee_m extends CI_Model {
 		return $body_array['response']['order_list'];
 	}
 
-	public function getProductsShopeeV2()
+	public function getProductsShopeeV2($data)
 	{
+		// var_dump($data);die();
 		$path = '/api/v2/product/get_item_list';
+		$token = $this->session->userdata('accessTokenShopee');
+		$shopId = $this->session->userdata('shopIdShopee');
+		$date = new DateTime();
+		$string = sprintf("%s%s%s%s%s", $this->partnerId, $path, $date->getTimestamp(), $token, $shopId);
+		$encrypt = hash_hmac('sha256', $string, $this->partnerKey);
+		try {
+			$client = new Client([
+			    'base_uri' => $this->url,
+			    // default timeout 5 detik
+			    'timeout'  => 5,
+			]);
+			 
+			$response = $client->request('GET', $path, [
+			    'query' => [
+			        'shop_id' => $shopId,
+			        'access_token' => $token,
+			        'partner_id' => $this->partnerId,
+			        'timestamp' => $date->getTimestamp(),
+			        'sign' => $encrypt,
+			        'item_status' => $data['type'],
+			        'page_size' => $data['length'],
+			        'offset' => $data['start']
+			    ]
+			]);
+			$body = $response->getBody();
+			$body_json = $body->getContents();
+			$body_array = json_decode($body, true);
+			if ($body_array['error'] != '') return $body_array;
+			try {
+				$result= [];
+				$result['recordsTotal'] = $body_array['response']['total_count'];
+				$result['recordsFiltered'] = $body_array['response']['total_count'];
+				$result['draw'] = $data['draw'];
+				if (empty($body_array['response']['item'])) {
+					$result['data'] = [];
+				} else {
+					$itemId = null;
+					foreach ($body_array['response']['item'] as $key) {
+						$itemId .= $key['item_id'].',';
+					}
+					$result['data'] = $this->getDetailsProductShopeeV2($itemId);
+				}
+				return $result;
+			} catch (Exception $e) {
+				return $e;
+			}
+		} catch (GuzzleHttp\Exception\ClientException $e) {
+		    $response = $e->getResponse();
+		    $error = $response->getBody();
+		    return $this->refreshToken('getProductsShopeeV2', $data);
+		}
+	}
+
+	public function getDetailsProductShopeeV2($data)
+	{
+		// var_dump(rtrim("$data", ', '));die();
+		$path = '/api/v2/product/get_item_base_info';
 		$token = $this->session->userdata('accessTokenShopee');
 		$shopId = $this->session->userdata('shopIdShopee');
 		$date = new DateTime();
@@ -374,15 +449,45 @@ class Shopee_m extends CI_Model {
 		        'partner_id' => $this->partnerId,
 		        'timestamp' => $date->getTimestamp(),
 		        'sign' => $encrypt,
-		        'offset' => 0,
-		        'item_status' => 'NORMAL',
-		        'page_size' => 100
+		    	'item_id_list' => rtrim("$data", ', ')
+		    ],
+		    'timeout' => 60
+		]);
+		$body = $response->getBody();
+		$body_array = json_decode($body, true);
+		$body_json = $body->getContents();
+		// var_dump($body_array);die();
+		if ($body_array['error'] != '') return $body_array;
+		return $body_array['response']['item_list'];
+	}
+
+	public function trackingOrderShopee($data)
+	{
+		$path = '/api/v2/logistics/get_tracking_info';
+		$token = $this->session->userdata('accessTokenShopee');
+		$shopId = $this->session->userdata('shopIdShopee');
+		$date = new DateTime();
+		$string = sprintf("%s%s%s%s%s", $this->partnerId, $path, $date->getTimestamp(), $token, $shopId);
+		$encrypt = hash_hmac('sha256', $string, $this->partnerKey);
+		$client = new Client([
+		    'base_uri' => $this->url,
+		    // default timeout 5 detik
+		    'timeout'  => 5,
+		]);
+		 
+		$response = $client->request('GET', $path, [
+		    'query' => [
+		        'shop_id' => $shopId,
+		        'access_token' => $token,
+		        'partner_id' => $this->partnerId,
+		        'timestamp' => $date->getTimestamp(),
+		        'sign' => $encrypt,
+		        'order_sn' => $data
 		    ]
 		]);
 		$body = $response->getBody();
 		$body_json = $body->getContents();
-		$body_array = json_decode($body, true);
-		return $body_json;
+		return $body_array = json_decode($body, true);
 	}
 
 }

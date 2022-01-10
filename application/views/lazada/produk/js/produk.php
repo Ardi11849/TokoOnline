@@ -1,5 +1,4 @@
 <script type="text/javascript">
-	$(document).ready( function () {
 		var table;
 		function lazadaDatatable(data) {
 		    table = $('#tProdukLazada').DataTable({
@@ -72,5 +71,4 @@
 		    }
 		  })
 		}
-	} );
 </script>

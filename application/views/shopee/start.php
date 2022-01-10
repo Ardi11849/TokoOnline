@@ -9,6 +9,9 @@
 	<main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
 		<?php $this->load->view('template/toast'); ?>
 		<?php $this->load->view('shopee/navbar'); ?>
+		<?php $this->load->view('shopee/saldo/isi/saldo'); ?>
+		<?php $this->load->view('shopee/produk/isi/produk');?>
+		<?php $this->load->view('shopee/return/isi/return'); ?>
 		<?php $this->load->view('shopee/order/isi/order'); ?>
 		<?php $this->load->view('template/footer'); ?>
 	</main>

@@ -32,6 +32,7 @@ class ComposerStaticInitc28b4be6c727b54f8db2534eaaa31d0c
         ),
         'P' => 
         array (
+            'Pusher\\PushNotifications\\' => 25,
             'Pusher\\' => 7,
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
@@ -43,6 +44,10 @@ class ComposerStaticInitc28b4be6c727b54f8db2534eaaa31d0c
             'GuzzleHttp\\Psr7\\' => 16,
             'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\' => 11,
+        ),
+        'F' => 
+        array (
+            'Firebase\\JWT\\' => 13,
         ),
         'D' => 
         array (
@@ -69,6 +74,10 @@ class ComposerStaticInitc28b4be6c727b54f8db2534eaaa31d0c
         'Symfony\\Component\\Yaml\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/yaml',
+        ),
+        'Pusher\\PushNotifications\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/pusher/pusher-push-notifications/src',
         ),
         'Pusher\\' => 
         array (
@@ -102,6 +111,10 @@ class ComposerStaticInitc28b4be6c727b54f8db2534eaaa31d0c
         'GuzzleHttp\\' => 
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
+        ),
+        'Firebase\\JWT\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
         'Doctrine\\Instantiator\\' => 
         array (

@@ -9,7 +9,7 @@ class Shopee extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->model('Shopee_m');
-		// if (!$this->session->userdata('id')) redirect(base_url(),'refresh');
+		if (!$this->session->userdata('id')) redirect(base_url(),'refresh');
 	}
 
 	public function index()
@@ -49,22 +49,48 @@ class Shopee extends CI_Controller {
 		redirect(base_url().'Shopee', 'refresh');
 	}
 
-	public function getOrdersShopee()
+	public function getSaldoShopee()
 	{
-		// var_dump($this->input->post());die();
-		// $data = [];
-		// $data['draw'] = $this->input->post();
-		// $data['recordsFiltered'] = $this->input->post('length');
-		$data = $this->Shopee_m->getOrdersShopeeV2($this->input->post());
-		// $data = $this->Shopee_m->getOrdersShopeeV1();
-		// var_dump($data);die();
+		$data = $this->Shopee_m->getSaldoShopeeV2($this->input->post());
 		if (is_array($data)) {
 			$encode = json_encode($data);
 			echo $encode;
 		} else {
 			echo $data;
 		}
-		
+	}
+
+	public function getOrdersShopee()
+	{
+		$data = $this->Shopee_m->getOrdersShopeeV2($this->input->post());
+		if (is_array($data)) {
+			$encode = json_encode($data);
+			echo $encode;
+		} else {
+			echo $data;
+		}
+	}
+
+	public function getOrderShopee()
+	{
+		$data = $this->Shopee_m->getDetailsOrderShopeeV2($this->input->post('order_sn'));
+		if (is_array($data)) {
+			$encode = json_encode($data);
+			echo $encode;
+		} else {
+			echo $data;
+		}
+	}
+
+	public function trackOrderShopee()
+	{
+		$data = $this->Shopee_m->trackingOrderShopee($this->input->post('order_sn'));
+		if (is_array($data)) {
+			$encode = json_encode($data);
+			echo $encode;
+		} else {
+			echo $data;
+		}
 	}
 
 	public function getReturnShopee()
@@ -82,8 +108,13 @@ class Shopee extends CI_Controller {
 
 	public function getProductsShopee()
 	{
-		$data = $this->Shopee_m->getProductsShopeeV2();
-		echo $data;
+		$data = $this->Shopee_m->getProductsShopeeV2($this->input->post());
+		if (is_array($data)) {
+			$encode = json_encode($data);
+			echo $encode;
+		} else {
+			echo $data;
+		}
 	}
 
 }

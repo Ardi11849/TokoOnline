@@ -16,13 +16,12 @@
     $("a.shopee").addClass('active bg-gradient-primary');
     $("a.dashboard").removeClass('active bg-gradient-primary');
     $("a.lazada").removeClass('active bg-gradient-primary');
-  $(document).ready( function () {
     $('#tanggalAwal').datepicker({
-      uiLibrary: 'bootstrap4',
+      uiLibrary: 'bootstrap5',
       format: 'dd-mm-yyyy'
     });
     $('#tanggalAkhir').datepicker({
-      uiLibrary: 'bootstrap4',
+      uiLibrary: 'bootstrap5',
       format: 'dd-mm-yyyy'
     });
     var table;
@@ -61,10 +60,9 @@
             $("#isiToastGagal").html('Message: '+d.message+' <br><p>Note: Jika error refresh_token harap login ulang akun online shop anda</p>');
             $("#dangerToast").toast('show');
             }
-               return d
+               return d.data
             }
         },
-      //       data:  data,
         columns: [
           { 
             "data": null,
@@ -72,27 +70,37 @@
               render: function (data, type, row, meta) {
               return meta.row + meta.settings._iDisplayStart + 1;
             }
-            },
+          },
           { 
             data: 'create_time', 
             render: function (data, type, row) {
               var toDate = new Date(data * 1000).toISOString()
-                  return toDate.substr(0, 10)+' '+toDate.substr(11, 8);
-              } 
+              return toDate.substr(0, 10)+' '+toDate.substr(11, 8);
+            } 
+          },
+          { 
+            data: 'order_sn', 
+            render: function (data, type, row) {
+              return '<button class="btn btn-link" onclick="detailOrderShopee(\''+data+'\')">'+data+"</button>"
+            } 
           },
           { data: 'buyer_username' },
-          { data: 'item_list.0.item_name' },
-          { data: 'days_to_ship' },
-          { data: 'estimated_shipping_fee' },
-          { data: 'payment_method' },
           { data: 'item_list.0.model_discounted_price' },
-          { data: 'order_status' },
-          { data: 'cancel_reason' },
-          {
-            data: null,
-            className: "dt-center detailOrdersLazada",
-            defaultContent: '<td class="align-middle"><a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">Detail</a></td>'
-          }
+          { 
+            data: 'order_status', 
+            render: function (data, type, row) {
+                  if(data === 'UNPAID') return "Belum Di Bayar";
+                  if(data === 'INVOICE_PANDING') return "Menunggu Konfirm Pembeli";
+                  if(data === 'READY_TO_SHIP') return "Belum Di Bayar";
+                  if(data === 'SHIPPED') return "Dikirim";
+                  if(data === 'PROCESSED') return "Diproses";
+                  if(data === 'COMPLETED') return "Selesai";
+                  if(data === 'IN_CANCEL') return "Menunggu Respon Pembatalan Seller";
+                  if(data === 'CANCELLED') return "Dibatalkan";
+                  if(data === 'TO_CONFIRM_RECEIVE') return "Konfirmasi Penerimaan";
+              } 
+          },
+          { data: 'cancel_reason' }
         ],
         "footerCallback": function ( row, data, start, end, display ) {
                 var api = this.api(), data;
@@ -105,21 +113,21 @@
                 };
      
                 total = api
-                    .column( 7 )
+                    .column( 4 )
                     .data()
                     .reduce( function (a, b) {
                         return intVal(a) + intVal(b);
                     }, 0 );
      
                 pageTotal = api
-                    .column( 7, { page: 'current'} )
+                    .column( 4, { page: 'current'} )
                     .data()
                     .reduce( function (a, b) {
                         return intVal(a) + intVal(b);
                     }, 0 );
      
-                $( api.column( 2 ).footer() ).html(
-                    "Total Page ini: "+numberRenderer(pageTotal) +' ( '+numberRenderer(total) +' Total Semua Page)'
+                $( api.column().footer() ).html(
+                    "Total Page ini: "+numberRenderer(pageTotal)
                 );
             }
       });
@@ -160,44 +168,70 @@
       } else {
         if (validasi() == true) {
           tableOrderan($('#tanggalAwal').val(), $("#tanggalAkhir").val(), $("#type").val());
-          // $.ajax({
-          //     type: 'POST',
-          //     url: '<?php echo base_url()?>Shopee/getOrdersShopee',
-          //     data: 'dateFrom='+$('#tanggalAwal').val()+'&dateTo='+$("#tanggalAkhir").val()+'&type=',
-          //     dataType: 'json',
-          //     success: function(data){
-          //     console.log(data.message);
-          //      if (data.message === '' || data.message === undefined) {
-          //      $("#isiToastSuccess").html('Berhasil mengambil data');
-          //      $("#successToast").toast('show');
-          //    }else{
-          //      $("#isiToastGagal").html('Message: '+data.message.split(',')[1]+' <p>Jika error refresh_token harap login ulang akun online shop anda</p>');
-          //      $("#dangerToast").toast('show');
-          //      }
-          //      table(data);
-          //     }
-          // })
         }
       }
     });
 
-    $("#tOrder").on("click", 'td.detailOrdersLazada', function() {
-      console.log(table.row(this).data());
-      const data = table.row(this).data();
+    function detailOrderShopee(data) {
       $.ajax({
           type: 'POST',
-          url: '<?php echo base_url()?>Dashboard/getOrderLazada',
+          url: '<?php echo base_url()?>Shopee/getOrderShopee',
           dataType: 'json',
-          data: 'orderId='+data.order_id,
-          success: function(data){
-            console.log(data);
-            lazadaDatatable(data);
+          data: 'order_sn='+data,
+          success: function(result){
+            console.log(result);
+            $("#detailOrderModalLabel").html("Detail No Pembeli: "+data);
+            $("#userIdModalOrder").html("<strong>User Id:</strong> "+result[0].buyer_user_id);
+            $("#usernameModalOrder").html("<strong>Username:</strong> "+result[0].buyer_username);
+            $("#messageModalOrder").html("<strong>Pesan Untuk Penjual:</strong> "+result[0].message_to_seller);
+            $("#cancelByModalOrder").html("<strong>Di Batalkan Oleh:</strong> "+result[0].cancel_by);
+            $("#reasonCancelModalOrder").html("<strong>Alasan Batal:</strong> "+result[0].buyer_cancel_reason);
+            $("#metodePembayaranModalOrder").html("<strong>Metode Pembayaran:</strong> "+result[0].payment_method);
+            $("#provinsiModalOrder").html("<strong>Provinsi:</strong> "+result[0].recipient_address.state);
+            $("#kotaModalOrder").html("<strong>Kota/Kab:</strong> "+result[0].recipient_address.city);
+            $("#kecamatanModalOrder").html("<strong>Kecamatan:</strong> "+result[0].recipient_address.district);
+            $("#kodePosModalOrder").html("<strong>Kode Pos:</strong> "+result[0].recipient_address.zipcode);
+            $("#alamatModalOrder").html("<strong>Alamat Lengkap:</strong> "+result[0].recipient_address.full_address);
+            $("#idBarangModalOrder").html("<strong>ID Barang:</strong> "+result[0].item_list[0].item_id);
+            $("#namaBarangModalOrder").html("<strong>Nama Barang:</strong> "+result[0].item_list[0].item_name);
+            $("#skuBarangModalOrder").html("<strong>SKU Barang:</strong> "+result[0].item_list[0].item_sku);
+            $("#hargaBarangModalOrder").html("<strong>Harga Barang:</strong> "+result[0].item_list[0].model_discounted_price);
+            $("#idModelModalOrder").html("<strong>Id Model:</strong> "+result[0].item_list[0].model_id);
+            $("#namaModelModalOrder").html("<strong>Nama Model:</strong> "+result[0].item_list[0].model_name);
+            $("#skuModelModalOrder").html("<strong>SKU Model:</strong> "+result[0].item_list[0].model_sku);
+            $("#jumlahBeliModalOrder").html("<strong>Jumlah Beli:</strong> "+result[0].item_list[0].model_quantity_purchased);
+            $("#idPesanaBarangModalOrder").html("<strong>Id Pesanan:</strong> "+result[0].item_list[0].order_item_id);
+            $("#beratModalOrder").html("<strong>Berat:</strong> "+result[0].item_list[0].weight);
+            $("#ekspedisiOrderModal").html(result[0].package_list[0].shipping_carrier);
+            $("#idPengirimanOrderModal").html(result[0].package_list[0].package_number);
+            $("#statusEkspedisiOrderModal").html(result[0].package_list[0].logistics_status);
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo base_url()?>Shopee/trackOrderShopee',
+                dataType: 'json',
+                data: 'order_sn='+data,
+                success: function(result2){
+                  console.log(result2)
+                  var html = '<p></p>';
+                  for (var i = 0; i <= result2.response.tracking_info.length - 1; i++) {
+                    var toDate = new Date(result2.response.tracking_info[i].update_time * 1000).toISOString()
+                    var date = toDate.substr(0, 10)+' '+toDate.substr(11, 8);
+                    html += '<li class="list-group-item border-0 d-flex align-items-center px-0 mb-2 pt-0">'+
+                        '<div class="avatar me-3">'+
+                          '<i class="fa fa-truck" style="color: black;"></i>'+
+                        '</div>'+
+                        '<div class="d-flex align-items-start flex-column justify-content-center">'+
+                          '<h6 class="mb-0 text-sm">'+result2.response.tracking_info[i].logistics_status+'</h6>'+
+                          '<p class="mb-0 text-xs">'+result2.response.tracking_info[i].description+'</p>'+
+                        '</div>'+
+                        '<a class="btn btn-link pe-3 ps-0 mb-0 ms-auto w-25 w-md-auto" href="javascript:;">'+date+'</a>'+
+                      '</li>'
+                  }
+                  $("#listTrackOrder").append(html);
+                }
+            })
+            $('#detailOrderModal').modal('show');
           }
       })
-    });
-    $('#tOrder').on( 'page.dt', function () {
-        var info = table.page.info();
-        console.log(info);
-    } );
-  } );
+    }
 </script>

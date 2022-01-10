@@ -7,13 +7,23 @@ class Lazada extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->model('Lazada_m');
-		// if (!$this->session->userdata('id')) redirect(base_url(),'refresh');
+		if (!$this->session->userdata('id')) redirect(base_url(),'refresh');
 	}
 
 	public function index()
 	{
-		// var_dump(date(DATE_ISO8601, strtotime('2022-01-01')));die();
-		$this->load->view('lazada/start');
+		$akun_lazada['akun'] = $this->Lazada_m->getShopFromDB();
+		$this->load->view('lazada/start', $akun_lazada);
+	}
+
+	public function setSession()
+	{
+	    $this->session->set_userdata('shopIdLazada', intval($this->input->post('id')));
+	    $this->session->set_userdata('accessTokenLazada', $this->input->post('token'));
+	    $this->session->set_userdata('expiresTokenLazada', $this->input->post('expired'));
+	    $this->session->set_userdata('refreshTokenLazada', $this->input->post('refresh_token'));
+	    $this->session->set_userdata('accountLazada', $this->input->post('namaShop'));
+	    echo 1;
 	}
 
 	public function loginLazada()
@@ -38,8 +48,8 @@ class Lazada extends CI_Controller {
 
 	public function getOrdersLazada()
 	{
-		$data = $this->Lazada_m->getOrdersLazada();
-		echo $data;
+		$data = $this->Lazada_m->getOrdersLazada($this->input->post());
+		echo json_encode($data);
 	}
 
 	public function getOrderLazada()

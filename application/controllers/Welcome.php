@@ -1,5 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+require_once FCPATH.'vendor/autoload.php';
+use GuzzleHttp\Client;
 
 class Welcome extends CI_Controller {
 
@@ -23,9 +25,14 @@ class Welcome extends CI_Controller {
 		$this->load->view('welcome_message');
 	}
 
+	public function enc()
+	{
+		echo crc32(md5('DemoAkun'));
+	}
+
 	public function login()
 	{
-		$data = $this->db->get_where('tbl_user', array('nm_user' => $this->input->post('namaUser'), 'password' => $this->input->post('password')))->result_array();
+		$data = $this->db->get_where('tbl_user', array('nm_user' => $this->input->post('namaUser'), 'password' => crc32(md5($this->input->post('password')))))->result_array();
 		if (count($data) >= 1) {
 			foreach ($data as $key) {
 				$this->session->set_userdata('id', $key['id_user']);
