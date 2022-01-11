@@ -190,7 +190,9 @@
           success: function(result){
             $("#loading").waitMe("hide");
             console.log(result);
-            $("#detailOrderModalLabel").html("Detail No Pembeli: "+data);
+            var toDate2 = new Date(result[0].create_time * 1000).toISOString()
+            var tgl = toDate2.substr(0, 10)+' '+toDate2.substr(11, 8);
+            $("#detailOrderModalLabel").html("Detail No Pembeli: "+data+"<span style='float:right;'>"+tgl);
             $("#userIdModalOrder").html("<strong>User Id:</strong> "+result[0].buyer_user_id);
             $("#usernameModalOrder").html("<strong>Username:</strong> "+result[0].buyer_username);
             $("#messageModalOrder").html("<strong>Pesan Untuk Penjual:</strong> "+result[0].message_to_seller);
