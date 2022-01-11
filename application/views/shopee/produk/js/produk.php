@@ -12,8 +12,9 @@
     var numberRenderer = $.fn.dataTable.render.number( ',', '.', 0, 'Rp. '  ).display;
     // function table(data) {
     function tableProduk(type) {
+      loading();
       $('#tProduk').DataTable().destroy();
-        return table = $('#tProduk').DataTable({
+      return table = $('#tProduk').DataTable({
         dom: 'Bfrtip',
         buttons: [{extend: 'excel', footer: true, title: 'Shopee Produk'}, {extend: 'pdf', footer: true}, {extend: 'print', footer: true}],
         scrollX: true,
@@ -28,26 +29,28 @@
           data: {
             type: type
           },
-            "error": function (e) {
-              console.log(e);
-              console.log(e.responseText);
-              if (e == 'error_auth') return "token kadaluarsa harap login akun online shop anda";
-              return e;
-            },
-            "dataSrc": function (d) {
-              console.log(d);
-              if (d.message === '' || d.message === undefined) {
-                $("#isiToastSuccess").html('Berhasil mengambil data');
-                $("#successToast").toast('show');
-                // d.recordsTotal = d.recordsTotal;
-                // d.recordsFiltered = 10;
-                // d.draw = 1;
-              }else{
-                $("#isiToastGagal").html('Message: '+d.message+' <br><p>Note: Jika error refresh_token harap login ulang akun online shop anda</p>');
-                $("#dangerToast").toast('show');
-                }
-               return d.data;
+          "error": function (e) {
+            console.log(e);
+            console.log(e.responseText);
+            $("#loading").waitMe("hide");
+            if (e == 'error_auth') return "token kadaluarsa harap login akun online shop anda";
+            return e;
+          },
+          "dataSrc": function (d) {
+            console.log(d);
+            $("#loading").waitMe("hide");
+            if (d.message === '' || d.message === undefined) {
+              $("#isiToastSuccess").html('Berhasil mengambil data');
+              $("#successToast").toast('show');
+              // d.recordsTotal = d.recordsTotal;
+              // d.recordsFiltered = 10;
+              // d.draw = 1;
+            }else{
+              $("#isiToastGagal").html('Message: '+d.message+' <br><p>Note: Jika error refresh_token harap login ulang akun online shop anda</p>');
+              $("#dangerToast").toast('show');
             }
+             return d.data;
+          }
         },
       //       data:  data,
         columns: [
@@ -130,8 +133,7 @@
       })
     });
     $('#tProduk').on( 'page.dt', function () {
-        var info = table.page.info();
-        console.log(info);
+      loading();
     } );
   } );
 </script>

@@ -26,6 +26,7 @@ $(document).ready( function () {
 	});
 	var numberRenderer = $.fn.dataTable.render.number( ',', '.', 0, 'Rp. '  ).display;
 	function tableOrderan(from, to, type) {
+		loading();
 		$('#tOrderLazada').DataTable().destroy();
 		return table = $('#tOrderLazada').DataTable({
 			dom: 'Bfrtip',
@@ -46,10 +47,12 @@ $(document).ready( function () {
 				},
 				"error": function (e) {
 					console.log(e);
+					$("#loading").waitMe("hide");
 					if (e == 'error_auth') return "token kadaluarsa harap login akun online shop anda";
-					// return e
+					return e
 				},
 				"dataSrc": function (d) {
+					$("#loading").waitMe("hide");
 					if (d.message === '' || d.message === undefined) {
 						$("#isiToastSuccess").html('Berhasil mengambil data');
 						$("#successToast").toast('show');
@@ -160,6 +163,9 @@ $(document).ready( function () {
 				lazadaDatatable(data);
 			}
 		})
+    $('#tOrderLazada').on( 'page.dt', function () {
+      loading();
+    });
 	});
 });
 </script>

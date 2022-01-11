@@ -5,7 +5,7 @@
 	          		<div class="card my-4">
 	            		<div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
 			              	<div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-			                	<h6 class="text-white text-capitalize ps-3">Tabel Pengembalian</h6>
+			                	<h6 class="text-white text-capitalize ps-3">Tabel Return</h6>
 			              	</div>
 	            		</div>
 	            		<div class="card-body pb-2">
@@ -25,7 +25,7 @@
 								    		<option value="">Pilih Type</option>
 								    		<option value="ALL">Semua</option>
 								    		<option value="CANCELLED">Dibatalkan</option>
-								    		<option value="REFUND_PAID">Pengembalian Dana</option>
+								    		<option value="REFUND_PAID">Return Dana</option>
 								    		<option value="CLOSED">Ditutup</option>
 								    	</select>
 								    </div>
@@ -44,7 +44,7 @@
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">No Pembeli</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">No Return</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">No Pengirimam</th>
-				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Jumlah Pengembalian Uang</th>
+				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Jumlah Return Uang</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Alasan</th>
 				                    </tr>

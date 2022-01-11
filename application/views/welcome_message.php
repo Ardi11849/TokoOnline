@@ -34,9 +34,11 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <!-- CSS Files -->
   <link id="pagestyle" href="<?php echo base_url()?>assets/css/material-dashboard.css?v=3.0.0" rel="stylesheet" />
+  <link rel="stylesheet" href="<?php echo base_url()?>template/Loading-Overlay/waitMe.min.css">
 </head>
 
 <body class="bg-gray-200">
+  <div id="loading">
     <?php $this->load->view('template/toast'); ?>
   <main class="main-content  mt-0">
     <div class="page-header align-items-start min-vh-100" style="background-image: url('https://images.unsplash.com/photo-1497294815431-9365093b7331?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1950&q=80');">
@@ -104,12 +106,8 @@
       </footer>
     </div>
   </main>
-  <!--   Core JS Files   -->
-  <script src="<?php echo base_url()?>assets/js/core/popper.min.js"></script>
-  <script src="<?php echo base_url()?>assets/js/core/bootstrap.min.js"></script>
-  <script src="<?php echo base_url()?>assets/js/plugins/perfect-scrollbar.min.js"></script>
-  <script src="<?php echo base_url()?>assets/js/plugins/smooth-scrollbar.min.js"></script>
-  <script src="<?php echo base_url()?>assets/js/jquery.min.js"></script>
+</div>
+<?php $this->load->view('template/js');?>
   <script>
     var win = navigator.platform.indexOf('Win') > -1;
     if (win && document.querySelector('#sidenav-scrollbar')) {
@@ -119,7 +117,7 @@
       Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
     $("#masuk").on('click', function() {
-    	// window.location.replace('<?php echo base_url()?>Dashboard');
+      loading();
       $.ajax({
         type: 'post',
         url: '<?php echo base_url()?>Welcome/login',
@@ -129,6 +127,7 @@
           if (data === 1) {
             window.location.replace('<?php echo base_url()?>Dashboard');
           } else {
+            $("#loading").waitMe("hide");
             $("#isiToastGagal").html('Periksa kembali username dan password anda');
             $("#dangerToast").toast('show');
           }

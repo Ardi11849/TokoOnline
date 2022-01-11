@@ -26,10 +26,10 @@
     });
     var table;
     var numberRenderer = $.fn.dataTable.render.number( ',', '.', 0, 'Rp. '  ).display;
-    // function table(data) {
     function tableOrderan(from, to, type) {
+      loading();
       $('#tOrder').DataTable().destroy();
-        return table = $('#tOrder').DataTable({
+      return table = $('#tOrder').DataTable({
         dom: 'Bfrtip',
         buttons: [{extend: 'excel', footer: true, title: 'Shopee order tanggal: '+from+' - '+to}, {extend: 'pdf', footer: true}, {extend: 'print', footer: true}],
         scrollX: true,
@@ -46,22 +46,24 @@
             dateTo: to,
             type: type
           },
-            "error": function (e) {
-              console.log(e);
-              if (e == 'error_auth') return "token kadaluarsa harap login akun online shop anda";
-              // return e
-            },
-            "dataSrc": function (d) {
-              console.log(d);
+          "error": function (e) {
+            console.log(e);
+            $("#loading").waitMe("hide");
+            if (e == 'error_auth') return "token kadaluarsa harap login akun online shop anda";
+            return e
+          },
+          "dataSrc": function (d) {
+            console.log(d);
+            $("#loading").waitMe("hide");
             if (d.message === '' || d.message === undefined) {
-            $("#isiToastSuccess").html('Berhasil mengambil data');
-            $("#successToast").toast('show');
-          }else{
-            $("#isiToastGagal").html('Message: '+d.message+' <br><p>Note: Jika error refresh_token harap login ulang akun online shop anda</p>');
-            $("#dangerToast").toast('show');
+              $("#isiToastSuccess").html('Berhasil mengambil data');
+              $("#successToast").toast('show');
+            }else{
+              $("#isiToastGagal").html('Message: '+d.message+' <br><p>Note: Jika error refresh_token harap login ulang akun online shop anda</p>');
+              $("#dangerToast").toast('show');
             }
-               return d.data
-            }
+             return d.data
+          }
         },
         columns: [
           { 
@@ -85,7 +87,10 @@
             } 
           },
           { data: 'buyer_username' },
-          { data: 'item_list.0.model_discounted_price' },
+          { 
+            data: 'item_list.0.model_discounted_price',
+            render: $.fn.dataTable.render.number( ',', '.', 0, 'Rp ' )
+          },
           { 
             data: 'order_status', 
             render: function (data, type, row) {
@@ -171,14 +176,19 @@
         }
       }
     });
+    $('#tOrder').on( 'page.dt', function () {
+      loading();
+    });
 
     function detailOrderShopee(data) {
+      loading();
       $.ajax({
           type: 'POST',
           url: '<?php echo base_url()?>Shopee/getOrderShopee',
           dataType: 'json',
           data: 'order_sn='+data,
           success: function(result){
+            $("#loading").waitMe("hide");
             console.log(result);
             $("#detailOrderModalLabel").html("Detail No Pembeli: "+data);
             $("#userIdModalOrder").html("<strong>User Id:</strong> "+result[0].buyer_user_id);
@@ -195,7 +205,7 @@
             $("#idBarangModalOrder").html("<strong>ID Barang:</strong> "+result[0].item_list[0].item_id);
             $("#namaBarangModalOrder").html("<strong>Nama Barang:</strong> "+result[0].item_list[0].item_name);
             $("#skuBarangModalOrder").html("<strong>SKU Barang:</strong> "+result[0].item_list[0].item_sku);
-            $("#hargaBarangModalOrder").html("<strong>Harga Barang:</strong> "+result[0].item_list[0].model_discounted_price);
+            $("#hargaBarangModalOrder").html("<strong>Harga Barang:</strong> <span class='harga'>"+result[0].item_list[0].model_discounted_price)+"</span>";
             $("#idModelModalOrder").html("<strong>Id Model:</strong> "+result[0].item_list[0].model_id);
             $("#namaModelModalOrder").html("<strong>Nama Model:</strong> "+result[0].item_list[0].model_name);
             $("#skuModelModalOrder").html("<strong>SKU Model:</strong> "+result[0].item_list[0].model_sku);

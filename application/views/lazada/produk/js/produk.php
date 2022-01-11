@@ -71,4 +71,7 @@
 		    }
 		  })
 		}
+    $('#tProdukLazada').on( 'page.dt', function () {
+      loading();
+    });
 </script>

@@ -11,6 +11,7 @@
     var table;
     var numberRenderer = $.fn.dataTable.render.number( ',', '.', 0, 'Rp. '  ).display;
     function tableSaldo(from, to, type) {
+      loading();
       $('#tSaldo').DataTable().destroy();
         return table = $('#tSaldo').DataTable({
         dom: 'Bfrtip',
@@ -30,19 +31,21 @@
           },
             "error": function (e) {
               console.log(e);
+              $("#loading").waitMe("hide");
               if (e == 'error_auth') return "token kadaluarsa harap login akun online shop anda";
-              // return e
+              return e;
             },
             "dataSrc": function (d) {
               console.log(d);
-            if (d.message === '' || d.message === undefined) {
-            $("#isiToastSuccess").html('Berhasil mengambil data');
-            $("#successToast").toast('show');
-          }else{
-            $("#isiToastGagal").html('Message: '+d.message+' <br><p>Note: Jika error refresh_token harap login ulang akun online shop anda</p>');
-            $("#dangerToast").toast('show');
-            }
-               return d.data
+              $("#loading").waitMe("hide");
+              if (d.message === '' || d.message === undefined) {
+                $("#isiToastSuccess").html('Berhasil mengambil data');
+                $("#successToast").toast('show');
+              }else{
+                $("#isiToastGagal").html('Message: '+d.message+' <br><p>Note: Jika error refresh_token harap login ulang akun online shop anda</p>');
+                $("#dangerToast").toast('show');
+              }
+              return d.data
             }
         },
         columns: [
@@ -69,8 +72,14 @@
             } 
           },
           { data: 'wallet_type' },
-          { data: 'amount' },
-          { data: 'current_balance' },
+          { 
+            data: 'amount',
+            render: $.fn.dataTable.render.number( ',', '.', 0, 'Rp ' )
+          },
+          { 
+            data: 'current_balance', 
+            render: $.fn.dataTable.render.number( ',', '.', 0, 'Rp ' )
+          },
           { 
             data: 'status', 
             render: function (data, type, row) {
@@ -147,8 +156,7 @@
       })
     });
     $('#tSaldo').on( 'page.dt', function () {
-        var info = table.page.info();
-        console.log(info);
-    } );
+      loading();
+    });
   } );
 </script>
