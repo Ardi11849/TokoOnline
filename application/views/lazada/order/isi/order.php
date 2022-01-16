@@ -21,7 +21,7 @@
 								    </div>
 								    <div class="col">
 								    	<label>Type</label>
-								    	<select class="form-control" id="type">
+								    	<select class="form-control" id="typeOrder">
 								    		<option value="">Pilih Type</option>
 								    		<option value="all">Semua</option>
 								    		<option value="unpaid">Unpaid</option>
@@ -45,22 +45,18 @@
 				                    <tr>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">No</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tanggal Pembuatan</th>
-				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama Customer</th>
-				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Total Item</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Id Orderan</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">No Orderan</th>
-				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Metode Pembayaran</th>
+				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama Customer</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Harga</th>
-				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Harga Pengiriman</th>
 				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
-				                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Action</th>
 				                    </tr>
 				                  </thead>
 				                  <tbody>
 				                  </tbody>
 							        <tfoot>
 							            <tr>
-							                <th colspan="1" style="text-align:left">Total Page Ini:</th>
+							                <th colspan="6" style="text-align:left">Total Page Ini:</th>
 							                <th></th>
 							            </tr>
 							        </tfoot>
@@ -71,4 +67,4 @@
 	        	</div>
 	      	</div>
 	    </div>
-	    <?php $this->load->view('lazada/order/js/order');?>
+	    <?php $this->load->view('lazada/order/isi/detailOrder');?>

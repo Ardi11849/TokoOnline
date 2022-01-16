@@ -23,6 +23,7 @@
   </main>
 	<?php $this->load->view('template/setting');?>
   <?php $this->load->view('dashboard/js/js'); ?>
+  <?php $this->load->view('template/js'); ?>
 </body>
 
 </html>

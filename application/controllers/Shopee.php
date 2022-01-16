@@ -21,6 +21,7 @@ class Shopee extends CI_Controller {
 	public function setSession()
 	{
 	    $this->session->set_userdata('shopIdShopee', intval($this->input->post('id')));
+	    $this->session->set_userdata('sellerIdShopee', intval($this->input->post('id')));
 	    $this->session->set_userdata('accessTokenShopee', $this->input->post('token'));
 	    $this->session->set_userdata('expiresTokenShopee', $this->input->post('expired'));
 	    $this->session->set_userdata('refreshTokenShopee', $this->input->post('refresh_token'));
@@ -31,13 +32,11 @@ class Shopee extends CI_Controller {
 	public function loginShopee()
 	{
 		$url = $this->Shopee_m->loginShopeeV2();
-		// $url = $this->Shopee_m->loginShopeeV1();
 		redirect($url,'refresh');
 	}
 
 	public function getTokenShopee()
 	{
-		// $this->session->set_userdata('shopIdShopee', $this->input->get('shop_id'));
 		$this->Shopee_m->getTokenShopee($this->input->get('shop_id'));
 		redirect(base_url().'Shopee/getShopInfo', 'refresh');
 	}
@@ -45,7 +44,6 @@ class Shopee extends CI_Controller {
 	public function getShopInfo()
 	{
 		$this->Shopee_m->getShopInfoV2();
-		// $this->Shopee_m->getShopInfoV1();
 		redirect(base_url().'Shopee', 'refresh');
 	}
 
@@ -82,6 +80,12 @@ class Shopee extends CI_Controller {
 		}
 	}
 
+	public function saveOrderShopee()
+	{
+		$result = $this->Shopee_m->saveOrderShopee($this->input->post('data'));
+		echo $result;
+	}
+
 	public function trackOrderShopee()
 	{
 		$data = $this->Shopee_m->trackingOrderShopee($this->input->post('order_sn'));
@@ -96,8 +100,6 @@ class Shopee extends CI_Controller {
 	public function getReturnShopee()
 	{
 		$data = $this->Shopee_m->getReturnShopeeV2($this->input->post());
-		// $data = $this->Shopee_m->getOrdersShopeeV1();
-		// var_dump($data);die();
 		if (is_array($data)) {
 			$encode = json_encode($data);
 			echo $encode;
@@ -115,6 +117,12 @@ class Shopee extends CI_Controller {
 		} else {
 			echo $data;
 		}
+	}
+
+	public function saveProdukShopee()
+	{
+		$result = $this->Shopee_m->saveProdukShopee($this->input->post('data'));
+		echo $result;
 	}
 
 }

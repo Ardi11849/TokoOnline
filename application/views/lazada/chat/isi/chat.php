@@ -21,7 +21,7 @@
 													</div>
 												</div>
 											</div>
-											<div id="listChatLazada" style="height: 500px;max-height: 480px;overflow: auto;">
+											<div id="listChatLazada" class="scroll" style="height: 500px;max-height: 480px;overflow: auto;">
 											</div>
 
 											<hr class="d-block d-lg-none mt-1 mb-0">
@@ -37,36 +37,6 @@
 											</div>
 
 											<?php $this->load->view('lazada/chat/isi/navsTab');?>
-
-											<!-- <div class="flex-grow-0 py-3 px-4 border-top">
-											    <ul class="nav nav-tabs" id="myTab" role="tablist">
-											        <li class="nav-item">
-											            <a class="nav-link active" id="text-tab" data-toggle="tab" href="#text1" role="tab" aria-controls="text" aria-selected="true">Text</a>
-											        </li>
-											        <li class="nav-item">
-											            <a class="nav-link" id="produk-tab" data-toggle="tab" href="#produk1" role="tab" aria-controls="produk" aria-selected="false">Produk</a>
-											        </li>
-											        <li class="nav-item">
-											            <a class="nav-link" id="order-tab" data-toggle="tab" href="#order1" role="tab" aria-controls="order" aria-selected="false">Order</a>
-											        </li>
-											    </ul>
-											    <div class="tab-content" id="myTabContent">
-											        <div class="tab-pane fade show active" id="text1" role="tabpanel" aria-labelledby="text-tab">
-														<div class="input-group">
-															<input type="text" class="form-control" placeholder="Type your message" id="text">
-															<button class="btn btn-primary" id="btnSendMessage">Send</button>
-														</div>
-											        </div>
-											        <div class="tab-pane fade" id="produk1" role="tabpanel" aria-labelledby="produk-tab">
-											        	<div class="col-12 mt-4" style="max-height: 350px; overflow: auto;">
-														  <div class="row" id="rowProduk">
-														  </div>
-														</div>
-											        </div>
-											        <div class="tab-pane fade" id="order1" role="tabpanel" aria-labelledby="order-tab"></div>
-											    </div>
-											</div> -->
-
 										</div>
 									</div>
 								</div>
@@ -76,4 +46,3 @@
 	        	</div>
 	      	</div>
 	    </div>
-	    <?php $this->load->view('lazada/chat/js/chat');?>

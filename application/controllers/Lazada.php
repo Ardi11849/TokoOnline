@@ -19,6 +19,7 @@ class Lazada extends CI_Controller {
 	public function setSession()
 	{
 	    $this->session->set_userdata('shopIdLazada', intval($this->input->post('id')));
+	    $this->session->set_userdata('sellerIdLazada', intval($this->input->post('idSeller')));
 	    $this->session->set_userdata('accessTokenLazada', $this->input->post('token'));
 	    $this->session->set_userdata('expiresTokenLazada', $this->input->post('expired'));
 	    $this->session->set_userdata('refreshTokenLazada', $this->input->post('refresh_token'));
@@ -28,7 +29,7 @@ class Lazada extends CI_Controller {
 
 	public function loginLazada()
 	{
-		redirect('https://auth.lazada.com/oauth/authorize?response_type=code&force_auth=true&redirect_uri='.base_url().'Lazada/getTokenLazada/&client_id=105624','refresh');
+		redirect('https://auth.lazada.com/oauth/authorize?response_type=code&force_auth=true&redirect_uri='.base_url().'Lazada/getTokenLazada/&client_id=101798','refresh');
 	}
 
 	public function getTokenLazada()
@@ -54,14 +55,29 @@ class Lazada extends CI_Controller {
 
 	public function getOrderLazada()
 	{
-		$data = $this->Lazada_m->getOrderLazada($this->input->post());
-		echo $data;
+		$result = [];
+		$result['order'] = $this->Lazada_m->getOrderLazada($this->input->post());
+		$result['trace'] = $this->Lazada_m->getTrackLazada($this->input->post());
+		$result['item'] = $this->Lazada_m->getOrderItem($this->input->post());
+		echo json_encode($result);
+	}
+
+	public function saveOrderLazada()
+	{
+		$result = $this->Lazada_m->saveOrderLazada($this->input->post('data'));
+		echo $result;
 	}
 
 	public function getProductsLazada()
 	{
-		$data = $this->Lazada_m->getProductsLazada();
-		echo $data;
+		$data = $this->Lazada_m->getProductsLazada($this->input->post());
+		echo json_encode($data);
+	}
+
+	public function saveProdukLazada()
+	{
+		$result = $this->Lazada_m->saveProdukLazada($this->input->post('data'));
+		echo $result;
 	}
 
 	public function getSessionChatLazada()

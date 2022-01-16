@@ -34,6 +34,7 @@
     };
     $('.harga').mask("#,##0", {reverse: true});
     $.fn.dataTable.ext.errMode = 'none';
+
     //  const beamsClient = new PusherPushNotifications.Client({
     //   instanceId: '12b60059-f1a5-4f32-9cd8-eac3defaaa55',
     // });

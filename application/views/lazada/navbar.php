@@ -5,7 +5,7 @@
   			<select class="form-control" style="width: 300px;" id="selectAkunLazada">
       			<option value="">Pilih akun lazada</option>
       			<?php foreach ($akun as $data) { ?>
-      				<option data-id="<?php echo $data['id_seller']?>" data-namaShop="<?php echo $data['nama_shop']?>" data-token="<?php echo $data['akses_token']?>" data-expired="<?php echo $data['expired_token']?>" data-refreshToken="<?php echo $data['refresh_token']?>" value="<?php echo $data['id_seller']?>"><?php echo $data['nama_shop']?></option>
+      				<option data-id="<?php echo $data['IdUserLazada']?>" data-idSeller="<?php echo $data['IdSeller']?>" data-namaShop="<?php echo $data['NamaShop']?>" data-token="<?php echo $data['AksesToken']?>" data-expired="<?php echo $data['ExpiredToken']?>" data-refreshToken="<?php echo $data['RefreshToken']?>" value="<?php echo $data['IdUserLazada']?>"><?php echo $data['NamaShop']?></option>
       			<?php } ?>
       		</select>
       	</h6>

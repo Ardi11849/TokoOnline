@@ -126,6 +126,14 @@
         success: function (data) {
           if (data === 1) {
             window.location.replace('<?php echo base_url()?>Dashboard');
+          } else if (data === 403) {
+            $("#loading").waitMe("hide");
+            $("#isiToastGagal").html('Akun anda talah non aktif, harap hubungi admin');
+            $("#dangerToast").toast('show');
+          } else if(data === 402) {
+            $("#loading").waitMe("hide");
+            $("#isiToastGagal").html('Akun anda telah expired, harap perpanjang kembali');
+            $("#dangerToast").toast('show');
           } else {
             $("#loading").waitMe("hide");
             $("#isiToastGagal").html('Periksa kembali username dan password anda');

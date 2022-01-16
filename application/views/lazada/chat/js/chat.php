@@ -6,7 +6,7 @@
 		$("#listChatLazada").html('');
 		var html = '';
 		for (var i = 0; i < data.length; i++) {
-			html += '<div class="list-group-item list-group-item-action border-0" data-sessionId="'+data[i].session_id+'" data-image="'+data[i].head_url+'" data-name="'+data[i].title+'" data-lastMessageId="'+data[i].last_message_id+'" data-buyerId="'+data[i].buyer_id+'"><div class="badge bg-success float-right">'+data[i].unread_count+'</div><div class="d-flex align-items-start"><img src="'+data[i].head_url+'" class="rounded-circle mr-1" alt="Foto Profile" width="40" height="40"><div class="flex-grow-1 ml-3" style="padding-left: 20px;">'+data[i].title+'<div class="small"><span class="fas fa-circle chat-online"></span> '+data[i].summary+'</div></div></div></div>';
+			html += '<button class="btn" style="padding:0px; width:100%"><div class="list-group-item list-group-item-action border-0" data-sessionId="'+data[i].session_id+'" data-image="'+data[i].head_url+'" data-name="'+data[i].title+'" data-lastMessageId="'+data[i].last_message_id+'" data-buyerId="'+data[i].buyer_id+'"><div style="text-align: right"><div class="badge bg-success float-right">'+data[i].unread_count+'</div></div><div class="d-flex align-items-start"><img src="'+data[i].head_url+'" class="rounded-circle mr-1" alt="Foto Profile" width="40" height="40"><div class="flex-grow-1 ml-3" style="padding-left: 10px;text-align:left">'+data[i].title+'<div class="small" style="overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 2;line-clamp: 2;-webkit-box-orient: vertical;">'+data[i].summary+'</div></div></div></div></button>';
 		}
 		$("#listChatLazada").append(html);
 		aktifKlik();

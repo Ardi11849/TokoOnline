@@ -6,14 +6,14 @@ class Lazada_m extends CI_Model {
 
 	var $url = 'https://api.lazada.com/rest';
 	var $url_id = 'https://api.lazada.co.id/rest';
-	var $appId = '105624';
-	var $token = 'XDlDsB4PvALpmMlUfsvGX8XVgiFTtIG8';
+	var $appId = '101798';
+	var $token = 'K3sGxHn7Su8zzUJG0qTfzMZo6bUuDCM4';
 
 	public function getShopFromDB()
 	{
-		$this->db->select('id_user_lazada, id_user, id_seller, nama_shop, akses_token, expired_token, refresh_token');
-		$this->db->where('id_user', $this->session->userdata('id'));
-		$data = $this->db->get('tbl_user_lazada')->result_array();
+		$this->db->select('IdUserLazada, IdUser, IdSeller, NamaShop, AksesToken, ExpiredToken, RefreshToken, ExpiredRefreshToken');
+		$this->db->where('IdUser', $this->session->userdata('id'));
+		$data = $this->db->get('user_lazada')->result_array();
 		return $data;
 	}
 
@@ -64,8 +64,8 @@ class Lazada_m extends CI_Model {
 
 	private function saveUser()
 	{
-		$insert = $this->db->query("replace into tbl_user_lazada
-			(id_user_lazada, id_user, id_seller, nama_shop, akses_token, expired_token, refresh_token, expired_refresh_token, created_by, created_on)
+		$insert = $this->db->query("replace into user_lazada
+			(IdUserLazada, IdUser, IdSeller, NamaShop, AksesToken, ExpiredToken, RefreshToken, ExpiredRefreshToken, CreatedBy, CreatedOn)
 			values (
 			'".$this->session->userdata('userIdLazada')."',
 			'".$this->session->userdata('id')."',
@@ -89,7 +89,7 @@ class Lazada_m extends CI_Model {
 			$request = new LazopRequest('/orders/get','GET');
 			$request->addApiParam('sort_direction','DESC');
 			$request->addApiParam('offset', $data['start']);
-			$request->addApiParam('limit', 100);
+			$request->addApiParam('limit', $data['length']);
 			$request->addApiParam('created_before',date(DATE_ISO8601, strtotime($data['dateTo'])));
 			$request->addApiParam('created_after',date(DATE_ISO8601, strtotime($data['dateFrom'])));
 			if ($data['type'] != 'all') $request->addApiParam('status',$data['type']);
@@ -97,26 +97,57 @@ class Lazada_m extends CI_Model {
 			$result['draw'] = $data['draw'];
 			return $result;
 		} catch (Exception $e) {
-			var_dump($e);
 			$this->refreshTokenLazada('getOrdersLazada', $data);
 		}
 	}
 
 	public function getOrderLazada($data)
 	{
-		$c = new LazopClient($this->url_id, $this->appId, $this->token);
-		$request = new LazopRequest('/order/get','GET');
-		$request->addApiParam('order_id', $data['orderId']);
-		return $c->execute($request, $this->session->userdata('accessTokenLazada'));
+		try {
+			$c = new LazopClient($this->url_id, $this->appId, $this->token);
+			$request = new LazopRequest('/order/get/new','GET');
+			$request->addApiParam('order_id', $data['orderId']);
+			return json_decode($c->execute($request, $this->session->userdata('accessTokenLazada')));
+		} catch (Exception $e) {
+			$this->refreshTokenLazada('getOrderLazada', $data);
+		}
 	}
 
-	public function getProductsLazada()
+	public function getTrackLazada($data)
+	{
+		try {
+			$c = new LazopClient($this->url_id, $this->appId, $this->token);
+			$request = new LazopRequest('/logistic/order/trace', 'GET');
+			$request->addApiParam('order_id', $data['orderId']);
+			return json_decode($c->execute($request, $this->session->userdata('accessTokenLazada')));
+		} catch (Exception $e) {
+			$this->refreshTokenLazada('getTrackLazada', $data);
+		}
+	}
+
+	public function getOrderItem($data)
+	{
+		try {
+			$c = new LazopClient($this->url_id, $this->appId, $this->token);
+			$request = new LazopRequest('/order/items/get', 'GET');
+			$request->addApiParam('order_id', $data['orderId']);
+			return json_decode($c->execute($request, $this->session->userdata('accessTokenLazada')));
+		} catch (Exception $e) {
+			$this->refreshTokenLazada('getTrackLazada', $data);
+		}
+	}
+
+	public function getProductsLazada($data)
 	{
 		try {
 			$c = new LazopClient($this->url_id, $this->appId, $this->token);
 			$request = new LazopRequest('/products/get','GET');
-			// $request->addApiParam('update_after','2017-02-10T09:00:00+08:00');
-			return $c->execute($request, $this->session->userdata('accessTokenLazada'));
+			$request->addApiParam('filter',$data['type']);
+			$request->addApiParam('offset', $data['start']);
+			$request->addApiParam('limit', $data['length']);
+			$result['data'] = json_decode($c->execute($request, $this->session->userdata('accessTokenLazada')));
+			$result['draw'] = $data['draw'];
+			return $result;
 		} catch (Exception $e) {
 			var_dump($e);
 			$this->refreshTokenLazada('getProductsLazada', null);
@@ -170,6 +201,20 @@ class Lazada_m extends CI_Model {
 		if (array_key_exists('itemId', $data)) $request->addApiParam('item_id', $data['itemId']);
 		if (array_key_exists('orderId', $data)) $request->addApiParam('order_id', $data['orderId']);
 		return $c->execute($request, $this->session->userdata('accessTokenLazada'));
+	}
+
+	public function saveProdukLazada($data)
+	{
+		return $insert = $this->db->query("replace into `produk`
+			(IdUser, IdUserLazada, NoProduk, NamaProduk, Harga, Stock, Gambar, SKU, Status, TglPembuatanProduk, Platform, CreatedBy, CreatedOn)
+			values ".$data);
+	}
+
+	public function saveOrderLazada($data)
+	{
+		return $insert = $this->db->query("replace into `order`
+			(IdUser, IdUserLazada, NoOrder, NamaPembeli, Harga, Status, TglPembuatanOrder, Platform, CreatedBy, CreatedOn)
+			values ".$data);
 	}
 
 }

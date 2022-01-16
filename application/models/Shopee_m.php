@@ -11,9 +11,9 @@ class Shopee_m extends CI_Model {
 
 	public function getShopFromDB()
 	{
-		$this->db->select('id_user_shopee, id_user, id_seller, nama_shop, akses_token, expired_token, refresh_token');
-		$this->db->where('id_user', $this->session->userdata('id'));
-		$data = $this->db->get('tbl_user_shopee')->result_array();
+		$this->db->select('IdUserShopee, IdUser, IdSeller, NamaShop, AksesToken, ExpiredToken, RefreshToken');
+		$this->db->where('IdUSer', $this->session->userdata('id'));
+		$data = $this->db->get('user_shopee')->result_array();
 		return $data;
 	}
 
@@ -135,8 +135,8 @@ class Shopee_m extends CI_Model {
 
 	private function saveUser()
 	{
-		$insert = $this->db->query("replace into tbl_user_shopee
-			(id_user_shopee, id_user, id_seller, nama_shop, akses_token, expired_token, refresh_token, created_by, created_on)
+		$insert = $this->db->query("replace into user_shopee
+			(IdUserShopee, IdUSer, IdSeller, NamaShop, AksesToken, ExpiredToken, RefreshToken, CreatedBy, CreatedOn)
 			values (
 			'".$this->session->userdata('shopIdShopee')."',
 			'".$this->session->userdata('id')."',
@@ -372,7 +372,6 @@ class Shopee_m extends CI_Model {
 
 	public function getProductsShopeeV2($data)
 	{
-		// var_dump($data);die();
 		$path = '/api/v2/product/get_item_list';
 		$token = $this->session->userdata('accessTokenShopee');
 		$shopId = $this->session->userdata('shopIdShopee');
@@ -429,7 +428,6 @@ class Shopee_m extends CI_Model {
 
 	public function getDetailsProductShopeeV2($data)
 	{
-		// var_dump(rtrim("$data", ', '));die();
 		$path = '/api/v2/product/get_item_base_info';
 		$token = $this->session->userdata('accessTokenShopee');
 		$shopId = $this->session->userdata('shopIdShopee');
@@ -449,14 +447,14 @@ class Shopee_m extends CI_Model {
 		        'partner_id' => $this->partnerId,
 		        'timestamp' => $date->getTimestamp(),
 		        'sign' => $encrypt,
-		    	'item_id_list' => rtrim("$data", ', ')
+		    	'item_id_list' => rtrim("$data", ', '),
+		    	'need_tax_info' => true
 		    ],
 		    'timeout' => 60
 		]);
 		$body = $response->getBody();
 		$body_array = json_decode($body, true);
 		$body_json = $body->getContents();
-		// var_dump($body_array);die();
 		if ($body_array['error'] != '') return $body_array;
 		return $body_array['response']['item_list'];
 	}
@@ -488,6 +486,20 @@ class Shopee_m extends CI_Model {
 		$body = $response->getBody();
 		$body_json = $body->getContents();
 		return $body_array = json_decode($body, true);
+	}
+
+	public function saveProdukShopee($data)
+	{
+		return $insert = $this->db->query("replace into `produk`
+			(IdUser, IdUserShopee, NoProduk, NamaProduk, Harga, Stock, Gambar, SKU, Status, TglPembuatanProduk, Platform, CreatedBy, CreatedOn)
+			values ".$data);
+	}
+
+	public function saveOrderShopee($data)
+	{
+		return $insert = $this->db->query("replace into `order`
+			(IdUser, IdUserShopee, NoOrder, NamaPembeli, Harga, Status, TglPembuatanOrder, Platform, CreatedBy, CreatedOn)
+			values ".$data);
 	}
 
 }
