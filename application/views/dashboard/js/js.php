@@ -1,4 +1,5 @@
-  <script>
+<?php $this->load->view('template/js');?>
+<script>
     $("a.dashboard").addClass('active bg-gradient-primary');
     $("a.lazada").removeClass('active bg-gradient-primary');
     $("a.shopee").removeClass('active bg-gradient-primary');

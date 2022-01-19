@@ -1,5 +1,4 @@
 <script type="text/javascript">
-  $(document).ready( function () {
     $('#tanggalAwalSaldo').datepicker({
       uiLibrary: 'bootstrap5',
       format: 'dd-mm-yyyy'
@@ -15,15 +14,33 @@
       $('#tSaldo').DataTable().destroy();
         return table = $('#tSaldo').DataTable({
         dom: 'Bfrtip',
-        buttons: [{extend: 'excel', footer: true, title: 'Shopee Saldo tanggal: '+from+' - '+to}, {extend: 'pdf', footer: true}, {extend: 'print', footer: true}],
+        lengthMenu: [
+          [ 10, 25, 50 ],
+          [ '10 rows', '25 rows', '50 rows' ]
+        ],
+        buttons: [
+            {extend: 'excel', footer: true, title: 'Lazada Saldo tanggal: '+from+' - '+to}, 
+            {extend: 'pdf', footer: true}, 
+            {extend: 'print', footer: true},
+            'pageLength', 
+            {
+              text: 'Simpan ke DB', action: function ( e, dt, node, config ) {
+                var data = [];
+                dt.buttons.exportData().body.forEach((item) => {
+                    console.log(item);
+                    data.push("('<?php echo $this->session->userdata('id');?>','<?php echo $this->session->userdata('shopIdLazada');?>','"+item[2]+"','"+item[3]+"','"+item[5]+"','"+item[6]+"','"+item[7]+"','"+item[8]+"','"+item[10]+"','"+item[1]+"','Lazada','<?php echo $this->session->userdata('id');?>',now())");
+                });
+                saveProduk(data);
+              }
+            }
+        ],
         scrollX: true,
         Saldoing: false,
         paging: true,
         processing: true,
-        serverSide: true,
-        "pageLength": 49,
+        serverSide: false,
         ajax: {
-          url: '<?php echo base_url()?>Shopee/getTransactionsShopee',
+          url: '<?php echo base_url()?>Lazada/getTransactionsLazada',
           type:'POST',
           data: {
             dateFrom: from,
@@ -56,34 +73,31 @@
               return meta.row + meta.settings._iDisplayStart + 1;
             }
           },
+          { data: 'transaction_date' },
+          { data: 'fee_name' },
+          { data: 'transaction_number' },
           { 
-            data: 'create_time', 
+            data: 'order_no', 
             render: function (data, type, row) {
-              var toDate = new Date(data * 1000).toISOString()
-                  return toDate.substr(0, 10)+' '+toDate.substr(11, 8);
-              } 
-          },
-          { data: 'buyer_name' },
-          { data: 'transaction_id' },
-          { 
-            data: 'order_sn', 
-            render: function (data, type, row) {
-              return '<button class="btn btn-link" onclick="detailOrderShopee(\''+data+'\')">'+data+"</button>"
+              return '<button class="btn btn-link" onclick="detailOrderLazada(\''+data+'\')">'+data+"</button>"
             } 
           },
-          { data: 'wallet_type' },
           { 
-            data: 'amount',
-            render: $.fn.dataTable.render.number( ',', '.', 0, 'Rp ' )
+            data: 'VAT_in_amount',
+            render: $.fn.dataTable.render.number( ',', '.', 0, ' Rp. ' )
           },
           { 
-            data: 'current_balance', 
-            render: $.fn.dataTable.render.number( ',', '.', 0, 'Rp ' )
+            data: 'WHT_amount',
+            render: $.fn.dataTable.render.number( ',', '.', 0, ' Rp. ' )
           },
           { 
-            data: 'status', 
+            data: 'amount', 
+            render: $.fn.dataTable.render.number( ',', '.', 0, ' Rp. ' )
+          },
+          { 
+            data: 'paid_status', 
             render: function (data, type, row) {
-                  if(data === 'FAILED') return "Gagal";
+                  if(data === 'Not paid') return "Belum Di Bayar";
                   if(data === 'COMPLETED') return "Berhasil";
                   if(data === 'PENDING') return "Menunggu";
                   if(data === 'INITIAL') return "Baru";
@@ -102,7 +116,7 @@
       });
     };
 
-    function validasi() {
+    function validasiSaldo() {
       if ($('#tanggalAwalSaldo').val() == '') {
         $("#isiToastGagal").html('harap isi tanggal awal');
         $("#dangerToast").toast('show');
@@ -123,19 +137,11 @@
     $('#btn-searchSaldo').on('click', function() {
       const dateToInt = $('#tanggalAkhirSaldo').val().split('-');
       const dateFromInt = $("#tanggalAwalSaldo").val().split('-');
-      const oneDay = 24 * 60 * 60 * 1000;
-      const fDate = new Date(dateToInt[2], dateToInt[1], dateToInt[0]);
-      const tDate = new Date(dateFromInt[2], dateFromInt[1], dateFromInt[0]);
-      const dateRange = Math.round(Math.abs((fDate - tDate) / oneDay));
-      console.log(dateRange);
-      if (dateRange > 14) {
-        $("#isiToastGagal").html('Range Tanggal tidak boleh melebihi 15 hari');
-        $("#dangerToast").toast('show');
-      } else if (dateToInt[2]+dateToInt[1]+dateToInt[0] < dateFromInt[2]+dateFromInt[1]+dateFromInt[0]) {
+      if (dateToInt[2]+dateToInt[1]+dateToInt[0] < dateFromInt[2]+dateFromInt[1]+dateFromInt[0]) {
         $("#isiToastGagal").html('Tanggal akhir harus lebih besar dari tanggal awal');
         $("#dangerToast").toast('show');
       } else {
-        if (validasi() == true) {
+        if (validasiSaldo() == true) {
           tableSaldo($('#tanggalAwalSaldo').val(), $("#tanggalAkhirSaldo").val(), $("#typeSaldo").val());
         }
       }
@@ -156,7 +162,6 @@
       })
     });
     $('#tSaldo').on( 'page.dt', function () {
-      loading();
+        loading();
     });
-  } );
 </script>

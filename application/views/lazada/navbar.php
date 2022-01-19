@@ -5,7 +5,7 @@
   			<select class="form-control" style="width: 300px;" id="selectAkunLazada">
       			<option value="">Pilih akun lazada</option>
       			<?php foreach ($akun as $data) { ?>
-      				<option data-id="<?php echo $data['IdUserLazada']?>" data-idSeller="<?php echo $data['IdSeller']?>" data-namaShop="<?php echo $data['NamaShop']?>" data-token="<?php echo $data['AksesToken']?>" data-expired="<?php echo $data['ExpiredToken']?>" data-refreshToken="<?php echo $data['RefreshToken']?>" value="<?php echo $data['IdUserLazada']?>"><?php echo $data['NamaShop']?></option>
+      				<option data-id="<?php echo $data['IdUserLazada']?>" data-idseller="<?php echo $data['IdSeller']?>" data-namashop="<?php echo $data['NamaShop']?>" data-token="<?php echo $data['AksesToken']?>" data-expired="<?php echo $data['ExpiredToken']?>" data-refreshtoken="<?php echo $data['RefreshToken']?>" value="<?php echo $data['IdUserLazada']?>"><?php echo $data['NamaShop']?></option>
       			<?php } ?>
       		</select>
       	</h6>
@@ -14,6 +14,10 @@
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
           </div>
           <ul class="navbar-nav  justify-content-end">
+            <li class="nav-item d-flex align-items-center" style="padding-right: 15px;">
+                <i class="fa fa-money me-sm-1" aria-hidden="true"></i>
+                <span class="d-sm-inline d-none" id="showSaldo" class="currency"> </span>
+            </li>
             <li class="nav-item d-flex align-items-center">
               <a href="<?php echo base_url()?>Lazada/loginLazada" class="nav-link text-body font-weight-bold px-0">
                 <i class="fa fa-user me-sm-1" aria-hidden="true"></i>

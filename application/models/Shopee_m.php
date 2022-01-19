@@ -50,7 +50,7 @@ class Shopee_m extends CI_Model {
 		$client = new Client([
 		    'base_uri' => $this->url,
 		    // default timeout 5 detik
-		    'timeout'  => 5,
+		    'timeout'  => 30,
 		]);
 		 
 		$response = $client->request('POST', $path.'?sign='.$encrypt.'&partner_id='.$this->partnerId.'&timestamp='.$date->getTimestamp(), [
@@ -79,7 +79,7 @@ class Shopee_m extends CI_Model {
 			$client = new Client([
 			    'base_uri' => $this->url,
 			    // default timeout 5 detik
-			    'timeout'  => 5,
+			    'timeout'  => 30,
 			]);
 			 
 			$response = $client->request('POST', $path.'?sign='.$encrypt.'&partner_id='.$this->partnerId.'&timestamp='.$date->getTimestamp(), [
@@ -116,7 +116,7 @@ class Shopee_m extends CI_Model {
 		$client = new Client([
 		    'base_uri' => $this->url,
 		    // default timeout 5 detik
-		    'timeout'  => 5,
+		    'timeout'  => 30,
 		]);
 		 
 		$response = $client->request('GET', $path.'?sign='.$encrypt.'&partner_id='.$this->partnerId.'&timestamp='.$date->getTimestamp().'&shop_id='.$shopId.'&access_token='.$token);
@@ -150,7 +150,7 @@ class Shopee_m extends CI_Model {
 		)");
 	}
 
-	public function getSaldoShopeeV2($data)
+	public function getTransactionsShopeeV2($data)
 	{
 		$path = '/api/v2/payment/get_wallet_transaction_list';
 		$token = $this->session->userdata('accessTokenShopee');
@@ -228,7 +228,7 @@ class Shopee_m extends CI_Model {
 			$client = new Client([
 			    'base_uri' => $this->url,
 			    // default timeout 5 detik
-			    'timeout'  => 5,
+			    'timeout'  => 30,
 			]);
 			 
 			$response = $client->request('GET', $path, [
@@ -244,12 +244,13 @@ class Shopee_m extends CI_Model {
 			        // 'page_size' => 50,
 			        'page_size' => $length,
 			        'cursor' => $cursor,
-			        'order_status' => $type
+			        ($data['type'] != 'ALL' ? array('order_status' => $type) : false)
 			    ]
 			]);
 			$body = $response->getBody();
 			$body_json = $body->getContents();
 			$body_array = json_decode($body, true);
+			// var_dump($body_array);
 			try {
 				$result= [];
 				$result['recordsTotal'] = count($body_array['response']['order_list']);
@@ -290,7 +291,7 @@ class Shopee_m extends CI_Model {
 			$client = new Client([
 			    'base_uri' => $this->url,
 			    // default timeout 5 detik
-			    'timeout'  => 5,
+			    'timeout'  => 30,
 			]);
 			 
 			$response = $client->request('GET', $path, [
@@ -347,7 +348,7 @@ class Shopee_m extends CI_Model {
 		$client = new Client([
 		    'base_uri' => $this->url,
 		    // default timeout 5 detik
-		    'timeout'  => 5,
+		    'timeout'  => 30,
 		]);
 		 
 		$response = $client->request('GET', $path, [
@@ -382,7 +383,7 @@ class Shopee_m extends CI_Model {
 			$client = new Client([
 			    'base_uri' => $this->url,
 			    // default timeout 5 detik
-			    'timeout'  => 5,
+			    'timeout'  => 30,
 			]);
 			 
 			$response = $client->request('GET', $path, [
@@ -437,7 +438,7 @@ class Shopee_m extends CI_Model {
 		$client = new Client([
 		    'base_uri' => $this->url,
 		    // default timeout 5 detik
-		    'timeout'  => 5,
+		    'timeout'  => 30,
 		]);
 		 
 		$response = $client->request('GET', $path, [
@@ -470,7 +471,7 @@ class Shopee_m extends CI_Model {
 		$client = new Client([
 		    'base_uri' => $this->url,
 		    // default timeout 5 detik
-		    'timeout'  => 5,
+		    'timeout'  => 30,
 		]);
 		 
 		$response = $client->request('GET', $path, [

@@ -47,9 +47,9 @@ class Shopee extends CI_Controller {
 		redirect(base_url().'Shopee', 'refresh');
 	}
 
-	public function getSaldoShopee()
+	public function getTransactionsShopee()
 	{
-		$data = $this->Shopee_m->getSaldoShopeeV2($this->input->post());
+		$data = $this->Shopee_m->getTransactionsShopeeV2($this->input->post());
 		if (is_array($data)) {
 			$encode = json_encode($data);
 			echo $encode;
@@ -67,6 +67,27 @@ class Shopee extends CI_Controller {
 		} else {
 			echo $data;
 		}
+	}
+
+	public function saveOrdersAuto()
+	{
+		$no = 0;
+		$one = 1;
+		$order = null;
+		do {
+			$data = array('start' => $no, 'length' => 10, 'dateFrom' => date('Y-m-d'), 'dateTo' => date('Y-m-d'), 'type' => 'ALL', 'draw' => $one++);
+			$result = $this->Shopee_m->getOrdersShopeeV2($data);
+			if ($result['recordsTotal'] == 0) break;
+			// echo "<pre>".var_dump($result['data'])."new line</pre>";
+			foreach ($result['data'] as $key) {
+				// var_dump($key);
+				$order .= '("'.$this->session->userdata('id').'","'.$this->session->userdata('shopIdShopee').'","'.$key["order_sn"].'","'.$key["buyer_username"].'","'.$key["item_list"][0]["model_discounted_price"].'","'.$key["order_status"].'","Shopee","'.$key["create_time"].'","'.$this->session->userdata('id').'",now()),';
+			}
+			$no+=10;
+		} while ($no <= 100000000000);
+		echo $order;
+		// $result2 = $this->Shopee->saveOrderShopee(rtrim($order, ','));
+		// echo $result;
 	}
 
 	public function getOrderShopee()

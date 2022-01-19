@@ -4,23 +4,51 @@
 		$("a.lazada").addClass('active bg-gradient-primary');
 		$("a.dashboard").removeClass('active bg-gradient-primary');
 		$("a.shopee").removeClass('active bg-gradient-primary');
+		$("#showSaldo").html('Total Saldo: Rp. '+"<?php echo $this->session->userdata('saldo');?>".replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
 
 		$('#selectAkunLazada').on('change', function() {
-				$.ajax({
-						type: 'post',
-						url: '<?php echo base_url()?>Lazada/setSession',
-						data: $(this).find(':selected').data(),
-						dataType: 'json',
-						success: function(data){
-								console.log(data);
-                var tables = $.fn.dataTable.fnTables(true);
+			loading();
+			$.ajax({
+				type: 'post',
+				url: '<?php echo base_url()?>Lazada/setSession',
+				data: $(this).find(':selected').data(),
+				dataType: 'json',
+				success: function(data){
+					console.log(data);
+	                var tables = $.fn.dataTable.fnTables(true);
 
-                $(tables).each(function () {
-                    $(this).dataTable().fnDestroy();
-                });
-						}
-				})
+	                $(tables).each(function () {
+	                    $(this).dataTable().fnDestroy();
+	                });
+	                getSaldo();
+        			storeOrder();
+				}
+			})
 		});
+
+		function getSaldo() {
+			$.ajax({
+				type: 'post',
+				url: '<?php echo base_url()?>Lazada/getSaldoLazada',
+				dataType: 'json',
+				success: function(data){
+					console.log(data);
+					$("#showSaldo").html('Total Saldo: Rp. '+data.data[0].closing_balance.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+				}
+			})
+		}
+
+		function storeOrder() {
+			$.ajax({
+				type: 'post',
+				url: '<?php echo base_url()?>Lazada/saveOrdersAuto',
+				dataType: 'json',
+				success: function(data){
+					console.log(data);
+            		$("#loading").waitMe('hide');
+				}
+			})
+		}
 
 		$('select').select2();
 

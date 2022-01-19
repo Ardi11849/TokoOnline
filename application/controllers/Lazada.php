@@ -19,11 +19,11 @@ class Lazada extends CI_Controller {
 	public function setSession()
 	{
 	    $this->session->set_userdata('shopIdLazada', intval($this->input->post('id')));
-	    $this->session->set_userdata('sellerIdLazada', intval($this->input->post('idSeller')));
+	    $this->session->set_userdata('sellerIdLazada', intval($this->input->post('idseller')));
 	    $this->session->set_userdata('accessTokenLazada', $this->input->post('token'));
 	    $this->session->set_userdata('expiresTokenLazada', $this->input->post('expired'));
-	    $this->session->set_userdata('refreshTokenLazada', $this->input->post('refresh_token'));
-	    $this->session->set_userdata('accountLazada', $this->input->post('namaShop'));
+	    $this->session->set_userdata('refreshTokenLazada', $this->input->post('refreshtoken'));
+	    $this->session->set_userdata('accountLazada', $this->input->post('namashop'));
 	    echo 1;
 	}
 
@@ -42,15 +42,21 @@ class Lazada extends CI_Controller {
 
 	public function refreshTokenLazada()
 	{
-		$data = $this->Lazada_m->refreshTokenLazada();
+		$data = $this->Lazada_m->refreshTokenLazada(null, null);
 		var_dump($data);
-		redirect(base_url().'Lazada', 'refresh');
+		// redirect(base_url().'Lazada', 'refresh');
 	}
 
 	public function getOrdersLazada()
 	{
 		$data = $this->Lazada_m->getOrdersLazada($this->input->post());
 		echo json_encode($data);
+	}
+
+	public function saveOrderLazada()
+	{
+		$result = $this->Lazada_m->saveOrderLazada($this->input->post('data'));
+		echo $result;
 	}
 
 	public function getOrderLazada()
@@ -62,10 +68,38 @@ class Lazada extends CI_Controller {
 		echo json_encode($result);
 	}
 
-	public function saveOrderLazada()
+	public function saveOrdersAuto()
 	{
-		$result = $this->Lazada_m->saveOrderLazada($this->input->post('data'));
-		echo $result;
+		$no = 0;
+		$one = 1;
+		$order = null;
+		do {
+			$data = array('start' => $no, 'length' => 50, 'dateFromUpdate' => date('Y-m-d').' 00:00:00', 'dateToUpdate' => date('Y-m-d').' 23:59:59', 'type' => 'all', 'draw' => $one++);
+			$result = $this->Lazada_m->getOrdersLazada($data);
+			foreach ($result['data']->data->orders as $key) {
+				$order .= '("'.$this->session->userdata('id').'","'.$this->session->userdata('shopIdLazada').'","'.$key->order_number.'","'.$key->address_billing->first_name.'","'.$key->price.'","'.$key->statuses[0].'","Lazada","'.$key->created_at.'","'.$this->session->userdata('id').'",now()),';
+			}
+			if ($result['data']->data->count == 0) break;
+			$no+=50;
+		} while ($no <= 100000000);
+		if ($order != null) $result2 = $this->Lazada_m->saveOrderLazada(rtrim($order, ','));
+		if ($order == null) $result2 = 0;
+		echo $result2;
+	}
+
+	public function getSaldoLazada()
+	{
+		$data = $this->Lazada_m->getSaldoLazada();
+		// echo '<pre>'.var_dump($data->data).'</pre>';
+		$this->session->set_userdata('saldo', $data->data[0]->closing_balance);
+		echo json_encode($data);
+	}
+
+	public function getTransactionsLazada()
+	{
+		$data = $this->Lazada_m->getTransactionsLazada($this->input->post());
+		// echo '<pre>'.var_dump($data->data).'</pre>';
+		echo json_encode($data);
 	}
 
 	public function getProductsLazada()

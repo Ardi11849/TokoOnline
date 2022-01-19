@@ -75,7 +75,7 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	// 'hostname' => 'mariadb-64978-0.cloudclusters.net:10005',
+	// 'hostname' => 'mariadb-66315-0.cloudclusters.net:15386',
 	'hostname' => 'localhost',
 	'username' => 'root',
 	// 'password' => '#P@ssw0rd!',

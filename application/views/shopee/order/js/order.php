@@ -3,6 +3,7 @@
     $('#selectAkunShopee').val('<?php echo $this->session->userdata('shopIdShopee');?>');
     $('#selectAkunShopee').trigger('change');
     $('#selectAkunShopee').on('change', function() {
+        loading();
         $.ajax({
             type: 'post',
             url: '<?php echo base_url()?>Shopee/setSession',
@@ -15,9 +16,22 @@
                 $(tables).each(function () {
                     $(this).dataTable().fnDestroy();
                 });
+                storeOrder()
             }
         })
     });
+
+    function storeOrder() {
+        $.ajax({
+            type: 'post',
+            url: '<?php echo base_url()?>Shopee/saveOrdersAuto',
+            dataType: 'json',
+            success: function(data){
+                console.log(data);
+                $("#loading").waitMe('hide');
+            }
+        })
+    }
 
     $("a.shopee").addClass('active bg-gradient-primary');
     $("a.dashboard").removeClass('active bg-gradient-primary');
